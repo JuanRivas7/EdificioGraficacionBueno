@@ -28,6 +28,13 @@ import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 import steve.crearEscenaGrafica;
 import java.util.ArrayList;
+import javax.media.j3d.Appearance;
+import javax.media.j3d.Material;
+import javax.media.j3d.QuadArray;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.TransparencyAttributes;
+import javax.vecmath.Point3f;
+import javax.vecmath.TexCoord2f;
 
 /**
  *
@@ -37,7 +44,7 @@ public class EscenaGrafica {
 
     ArrayList<Ventana> listaVentanas = new ArrayList<>();
     BranchGroup objRaiz = new BranchGroup();
-    Textura textura = new Textura();
+    static Textura textura = new Textura();
     int paraTextura = Primitive.GENERATE_NORMALS + Primitive.GENERATE_TEXTURE_COORDS;
     color c = new color();
     TransformGroup tgMundo;
@@ -45,6 +52,7 @@ public class EscenaGrafica {
     crearEscenaGrafica steve = new crearEscenaGrafica();
     Point3d posPersonaje = new Point3d(0, 0, 0);
     SerialPort puerto;
+
     public EscenaGrafica() {
         //------- MUNDO--------
         Box bxMundo = new Box(-8.0f, 10.0f, 10.0f, paraTextura, textura.crearTexturas("cielo_1.jpg"));//c.setColor(38, 238, 240)
@@ -62,8 +70,10 @@ public class EscenaGrafica {
         //crearParedCompleta(-0.5f, -0.1f, 0.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, -10);
         //crearParedCompleta(-0.8f, -0.1f, 0.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, -10);
         //crearParedCompleta(-0.11f, -0.1f, 0.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, -10);
-        crearVentana(0.0f, 0.1f, 0.0f, 0.3f, 0.3f, 0.05f, 0);
-        ///||------------PERMISOS------------------||
+        crearVentana(0.0f, 0.1f, 0.0f, 0.1f, 0.1f, 0.03f, 0);
+        // En tu constructor EscenaGrafica o donde necesites crear árboles:
+        // En tu constructor EscenaGrafica o donde crees los objetos:
+        agregarArbol(0.0f, -0.08f, 0.0f);
         tgMundo.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         tgPiso.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         //||--------------MOVER EL MOUSE----------||
@@ -118,7 +128,7 @@ public class EscenaGrafica {
 
     public void crearVentana(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
         Ventana ventana = new Ventana(x, y, z, ancho, alto, profundidad, rotYGrados);
-        objRaiz.addChild(ventana);
+        tgMundo.addChild(ventana);
         listaVentanas.add(ventana);
     }
 
@@ -370,22 +380,124 @@ public class EscenaGrafica {
         t3dMundo.setTranslation(posicionMundo);
         tgMundo.setTransform(t3dMundo);
     }
+
     private void verificarVentanasCercanasYTogglear() {
-    Vector3f posPersonajeVec = new Vector3f((float) posPersonaje.x, (float) posPersonaje.y, (float) posPersonaje.z);
+        Vector3f posPersonajeVec = new Vector3f((float) posPersonaje.x, (float) posPersonaje.y, (float) posPersonaje.z);
+        for (Ventana ventana : listaVentanas) {
+            Vector3f posVentana = ventana.getPosicion();
 
-    for (Ventana ventana : listaVentanas) {
-        Vector3f posVentana = ventana.getPosicion();
+            float dx = posVentana.x - posPersonajeVec.x;
+            float dy = posVentana.y - posPersonajeVec.y;
+            float dz = posVentana.z - posPersonajeVec.z;
+            float distancia = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-        float dx = posVentana.x - posPersonajeVec.x;
-        float dy = posVentana.y - posPersonajeVec.y;
-        float dz = posVentana.z - posPersonajeVec.z;
-        float distancia = (float)Math.sqrt(dx*dx + dy*dy + dz*dz);
-
-        if (distancia < 0.3f) { // Puedes ajustar el umbral
-            ventana.toggle(); // Abre o cierra
-            break; // Solo una ventana por clic
+            if (distancia < 0.2f) { // Puedes ajustar el umbral
+                ventana.toggle(); // Abre o cierra
+                break; // Solo una ventana por clic
+            }
         }
     }
-}
 
+    //----------------Arboles----------------
+    public Shape3D crearPlanoArbolDobleCara(float x, float y, float z, float ancho, float altura, String tex) {
+        Appearance apariencia = Textura.getInstance().crearTexturas(tex);
+
+        // Configurar transparencia
+        TransparencyAttributes ta = new TransparencyAttributes();
+        ta.setTransparencyMode(TransparencyAttributes.BLENDED);
+        ta.setTransparency(0.1f); // Ajustar según necesidad
+        apariencia.setTransparencyAttributes(ta);
+
+        // Configurar material para ambas caras
+        Material material = new Material();
+        material.setLightingEnable(true);
+        material.setDiffuseColor(new Color3f(1f, 1f, 1f));
+        material.setSpecularColor(new Color3f(0.2f, 0.2f, 0.2f));
+        apariencia.setMaterial(material);
+
+        // Crear geometría con 8 vértices (4 frontales + 4 traseros)
+        QuadArray geometria = new QuadArray(8,
+                QuadArray.COORDINATES
+                | QuadArray.TEXTURE_COORDINATE_2
+                | QuadArray.NORMALS);
+
+        float mitadAncho = ancho / 2;
+
+        // Cara frontal
+        geometria.setCoordinate(0, new Point3f(x - mitadAncho, y, z));
+        geometria.setCoordinate(1, new Point3f(x + mitadAncho, y, z));
+        geometria.setCoordinate(2, new Point3f(x + mitadAncho, y + altura, z));
+        geometria.setCoordinate(3, new Point3f(x - mitadAncho, y + altura, z));
+
+        // Cara trasera (orden inverso)
+        geometria.setCoordinate(4, new Point3f(x - mitadAncho, y + altura, z));
+        geometria.setCoordinate(5, new Point3f(x + mitadAncho, y + altura, z));
+        geometria.setCoordinate(6, new Point3f(x + mitadAncho, y, z));
+        geometria.setCoordinate(7, new Point3f(x - mitadAncho, y, z));
+
+        // Coordenadas de textura para ambas caras
+        TexCoord2f[] texCoords = {
+            new TexCoord2f(0.0f, 0.0f), new TexCoord2f(1.0f, 0.0f),
+            new TexCoord2f(1.0f, 1.0f), new TexCoord2f(0.0f, 1.0f),
+            new TexCoord2f(0.0f, 1.0f), new TexCoord2f(1.0f, 1.0f),
+            new TexCoord2f(1.0f, 0.0f), new TexCoord2f(0.0f, 0.0f)
+        };
+
+        for (int i = 0; i < 8; i++) {
+            geometria.setTextureCoordinate(0, i, texCoords[i]);
+        }
+
+        // Normales para ambas caras
+        Vector3f normalFrontal = new Vector3f(0f, 0f, 1f);
+        Vector3f normalTrasera = new Vector3f(0f, 0f, -1f);
+        for (int i = 0; i < 4; i++) {
+            geometria.setNormal(i, normalFrontal);
+            geometria.setNormal(i + 4, normalTrasera);
+        }
+
+        return new Shape3D(geometria, apariencia);
+    }
+
+    public TransformGroup crearArbolCompleto(float x, float y, float z, float size, float height, String tex) {
+        TransformGroup tgArbol = new TransformGroup();
+
+        // Primer plano (frontal)
+        Shape3D plano1 = crearPlanoArbolDobleCara(0, 0, 0, size, height, tex);
+        tgArbol.addChild(plano1);
+
+        // Segundo plano (rotado 45° para mejor cobertura)
+        Shape3D plano2 = crearPlanoArbolDobleCara(0, 0, 0, size, height, tex);
+        TransformGroup tgPlano2 = new TransformGroup();
+        Transform3D rot45 = new Transform3D();
+        rot45.rotY(Math.toRadians(45));
+        tgPlano2.setTransform(rot45);
+        tgPlano2.addChild(plano2);
+        tgArbol.addChild(tgPlano2);
+
+        // Tercer plano (rotado -45° para mejor cobertura)
+        Shape3D plano3 = crearPlanoArbolDobleCara(0, 0, 0, size, height, tex);
+        TransformGroup tgPlano3 = new TransformGroup();
+        Transform3D rotNeg45 = new Transform3D();
+        rotNeg45.rotY(Math.toRadians(-45));
+        tgPlano3.setTransform(rotNeg45);
+        tgPlano3.addChild(plano3);
+        tgArbol.addChild(tgPlano3);
+
+        // Posicionamiento final
+        TransformGroup tgPosicionado = new TransformGroup();
+        Transform3D posicion = new Transform3D();
+        posicion.setTranslation(new Vector3f(x, y, z));
+        tgPosicionado.setTransform(posicion);
+        tgPosicionado.addChild(tgArbol);
+
+        return tgPosicionado;
+    }
+
+    public void agregarArbol(float posX, float posY,float posZ) {
+        float ancho = 0.5f;
+        float altura = 0.7f;
+        String textura = "pino.png"; // Textura por defecto
+        TransformGroup arbol = crearArbolCompleto(posX, posY, posZ, ancho, altura, textura);
+        tgMundo.addChild(arbol);
+    }
 }
