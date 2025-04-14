@@ -43,6 +43,7 @@ import javax.vecmath.TexCoord2f;
 public class EscenaGrafica {
 
     ArrayList<Ventana> listaVentanas = new ArrayList<>();
+    ArrayList<Puerta> listaPuerta = new ArrayList<>();
     BranchGroup objRaiz = new BranchGroup();
     static Textura textura = new Textura();
     int paraTextura = Primitive.GENERATE_NORMALS + Primitive.GENERATE_TEXTURE_COORDS;
@@ -67,12 +68,8 @@ public class EscenaGrafica {
         EscalarTG(tgPiso, 5.0f);
         //-----------PAREDES Y VENTANAS------------
         //crearParedCompleta(-0.2f, -0.1f, 0.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, -10);
-        //crearParedCompleta(-0.5f, -0.1f, 0.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, -10);
-        //crearParedCompleta(-0.8f, -0.1f, 0.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, -10);
-        //crearParedCompleta(-0.11f, -0.1f, 0.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, -10);
-        crearVentana(0.0f, 0.1f, 0.0f, 0.1f, 0.1f, 0.03f, 0);
-        // En tu constructor EscenaGrafica o donde necesites crear árboles:
-        // En tu constructor EscenaGrafica o donde crees los objetos:
+        crearVentana(0.0f, 0.05f, 1.0f, 0.1f, 0.1f, 0.05f, 0);
+        crearPuerta(0.0f, 0.15f, -0.5f, 0.2f, 0.3f, 0.05f, 0);
         agregarArbol(0.0f, -0.08f, 0.0f);
         tgMundo.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         tgPiso.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
@@ -130,6 +127,11 @@ public class EscenaGrafica {
         Ventana ventana = new Ventana(x, y, z, ancho, alto, profundidad, rotYGrados);
         tgMundo.addChild(ventana);
         listaVentanas.add(ventana);
+    }
+    public void crearPuerta(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
+        Puerta Puerta1 = new Puerta(x, y, z, ancho, alto, profundidad, rotYGrados);
+        tgMundo.addChild(Puerta1);
+        listaPuerta.add(Puerta1);
     }
 
     private void crearDetectorProximidad(final Ventana ventana, final float umbral) {
@@ -297,6 +299,7 @@ public class EscenaGrafica {
                             System.out.println("Recibido: " + linea);
                             if (linea.equals("Presionado  Boton")) {
                                 verificarVentanasCercanasYTogglear();
+                                verificarPuertasCercanasYTogglear();
                             }
                             if (linea.equals("Suelto  Arriba") || linea.equals("Presionado  Arriba")) {
                                 MoverAdelante(tgMundo, steve.obtenerPanza(), 0.15);
@@ -382,21 +385,31 @@ public class EscenaGrafica {
     }
 
     private void verificarVentanasCercanasYTogglear() {
-        Vector3f posPersonajeVec = new Vector3f((float) posPersonaje.x, (float) posPersonaje.y, (float) posPersonaje.z);
         for (Ventana ventana : listaVentanas) {
-            Vector3f posVentana = ventana.getPosicion();
-
-            float dx = posVentana.x - posPersonajeVec.x;
-            float dy = posVentana.y - posPersonajeVec.y;
-            float dz = posVentana.z - posPersonajeVec.z;
-            float distancia = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-            if (distancia < 0.2f) { // Puedes ajustar el umbral
-                ventana.toggle(); // Abre o cierra
-                break; // Solo una ventana por clic
-            }
+            ventana.toggle(); // Abre/cierra todas las ventanas sin verificar distancia
         }
     }
+    private void verificarPuertasCercanasYTogglear() {
+        for (Puerta puerta : listaPuerta) {
+            puerta.toggle(); // Abre/cierra todas las ventanas sin verificar distancia
+        }
+    }
+//    private void verificarVentanasCercanasYTogglear() {
+//        Vector3f posPersonajeVec = new Vector3f((float) posPersonaje.x, (float) posPersonaje.y, (float) posPersonaje.z);
+//        for (Ventana ventana : listaVentanas) {
+//            Vector3f posVentana = ventana.getPosicion();
+//
+//            float dx = posVentana.x - posPersonajeVec.x;
+//            float dy = posVentana.y - posPersonajeVec.y;
+//            float dz = posVentana.z - posPersonajeVec.z;
+//            float distancia = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+//
+//            if (distancia < 0.2f) { // Puedes ajustar el umbral
+//                ventana.toggle(); // Abre o cierra
+//                break; // Solo una ventana por clic
+//            }
+//        }
+//    }
 
     //----------------Arboles----------------
     public Shape3D crearPlanoArbolDobleCara(float x, float y, float z, float ancho, float altura, String tex) {
@@ -493,7 +506,7 @@ public class EscenaGrafica {
         return tgPosicionado;
     }
 
-    public void agregarArbol(float posX, float posY,float posZ) {
+    public void agregarArbol(float posX, float posY, float posZ) {
         float ancho = 0.5f;
         float altura = 0.7f;
         String textura = "pino.png"; // Textura por defecto
