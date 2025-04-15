@@ -76,7 +76,7 @@ public class crearEscenaGrafica {
         bxBraDer.setAppearance(0, mano);
         Sphere spHomDer = new Sphere(0.05f, c.setColor(0, 0, 0)); //Esfera para que lo se le safe el hombro a Steve
         Sphere spCodoDer = new Sphere(0.05f, c.setColor(0, 0, 0)); //Esfera para que gire el CODO
-
+        
         //-----------------------BRAZO DE LA IZQUIERDA------------------------
         Box bxHomIzq = new Box(0.1f, 0.15f, 0.1f, paraTextura, hombro); // HOMBRO IZQ de steve
         Box bxBraIzq = new Box(0.1f, 0.15f, 0.1f, paraTextura, manoAtras); // BRAZO IZQ de steve
@@ -186,10 +186,11 @@ public class crearEscenaGrafica {
         tgSpPiernaDer.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         tgSpPiernaIzq.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         EscalarTG(tgPanza, 0.01f);
+        
         MouseRotate myMouseRotate = new MouseRotate(); //permite utilizar el comportamiento que tiene el Mouse
         myMouseRotate.setTransformGroup(tgPanza);
         myMouseRotate.setSchedulingBounds(new BoundingSphere());
-
+        
         //-------------------------DIAGRAMA--------------------------
         objRaiz.addChild(myMouseRotate);
         objRaiz.addChild(tgPanza);

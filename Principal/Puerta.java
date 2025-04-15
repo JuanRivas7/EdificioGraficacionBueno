@@ -17,12 +17,12 @@ public class Puerta extends BranchGroup {
         // Apariencia del marco plateado
         Appearance marcoApp = new Appearance();
         marcoApp.setColoringAttributes(new ColoringAttributes(
-            new Color3f(192 / 255f, 192 / 255f, 192 / 255f), ColoringAttributes.NICEST));
+                new Color3f(192 / 255f, 192 / 255f, 192 / 255f), ColoringAttributes.NICEST));
 
         // Apariencia de la hoja de la puerta (madera)
         Appearance puertaApp = new Appearance();
         puertaApp.setColoringAttributes(new ColoringAttributes(
-            new Color3f(0.6f, 0.4f, 0.2f), ColoringAttributes.NICEST)); // color madera
+                new Color3f(0.6f, 0.4f, 0.2f), ColoringAttributes.NICEST)); // color madera
 
         // Transformación base (posición y rotación global de la puerta)
         Transform3D transformacion = new Transform3D();
@@ -44,7 +44,6 @@ public class Puerta extends BranchGroup {
         // Hoja de la puerta (gira sobre el borde izquierdo)
         Box hojaPuerta = new Box((ancho - marcoAncho * 2) / 2, (alto - marcoAncho * 2) / 2,
                 profundidad / 2 - 0.01f, puertaApp);
-
         // Transformación para colocar la hoja en su sitio (relativo al eje de giro)
         tgPuertaHoja = new TransformGroup();
         tgPuertaHoja.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
@@ -93,4 +92,5 @@ public class Puerta extends BranchGroup {
         tg.addChild(marco);
         return tg;
     }
+
 }

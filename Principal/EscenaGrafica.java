@@ -69,7 +69,7 @@ public class EscenaGrafica {
         //-----------PAREDES Y VENTANAS------------
         //crearParedCompleta(-0.2f, -0.1f, 0.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, -10);
         crearVentana(0.0f, 0.05f, 1.0f, 0.1f, 0.1f, 0.05f, 0);
-        crearPuerta(0.0f, 0.15f, -0.5f, 0.2f, 0.3f, 0.05f, 0);
+        crearPuerta(0.0f, 0.15f, -0.5f, 0.2f, 0.3f, 0.05f, 90);
         agregarArbol(0.0f, -0.08f, 0.0f);
         tgMundo.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         tgPiso.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
@@ -78,7 +78,6 @@ public class EscenaGrafica {
         MouseRotate myMouseRotate = new MouseRotate();
         myMouseRotate.setTransformGroup(tgMundo);
         myMouseRotate.setSchedulingBounds(new BoundingSphere());
-
         //------------Termina pa que se mueva-------------
         //----------ADD CHILD----------
         tgMundo.addChild(bxMundo);
@@ -86,8 +85,9 @@ public class EscenaGrafica {
         //objRaiz.addChild(tgPiso);
         objRaiz.addChild(myMouseRotate);
         objRaiz.addChild(tgMundo);
-        steve.Posicion(0, -0.08f, 0);
+        steve.Posicion(0, -0.02f, 0);
         tgMundo.addChild(tgPiso);
+        steve.girarTG(steve.obtenerPanza(), 180, "Y");
         objRaiz.addChild(steve.obtenerCuerpo());
         configurarIluminacion(objRaiz);
         conectarPuerto();
@@ -337,7 +337,7 @@ public class EscenaGrafica {
         Matrix3d rotacion = new Matrix3d();
         t3dPersonaje.getRotationScale(rotacion);
 
-        Vector3d frenteLocal = new Vector3d(0, 0, -15);
+        Vector3d frenteLocal = new Vector3d(0, 0, 15);
 
         rotacion.transform(frenteLocal);
         frenteLocal.scale(velocidad);
@@ -364,7 +364,7 @@ public class EscenaGrafica {
         Matrix3d rotacion = new Matrix3d();
         t3dPersonaje.getRotationScale(rotacion);
 
-        Vector3d frenteLocal = new Vector3d(0, 0, 15);
+        Vector3d frenteLocal = new Vector3d(0, 0, -15);
 
         rotacion.transform(frenteLocal);
         frenteLocal.scale(velocidad);
@@ -389,28 +389,12 @@ public class EscenaGrafica {
             ventana.toggle(); // Abre/cierra todas las ventanas sin verificar distancia
         }
     }
+
     private void verificarPuertasCercanasYTogglear() {
         for (Puerta puerta : listaPuerta) {
             puerta.toggle(); // Abre/cierra todas las ventanas sin verificar distancia
         }
     }
-//    private void verificarVentanasCercanasYTogglear() {
-//        Vector3f posPersonajeVec = new Vector3f((float) posPersonaje.x, (float) posPersonaje.y, (float) posPersonaje.z);
-//        for (Ventana ventana : listaVentanas) {
-//            Vector3f posVentana = ventana.getPosicion();
-//
-//            float dx = posVentana.x - posPersonajeVec.x;
-//            float dy = posVentana.y - posPersonajeVec.y;
-//            float dz = posVentana.z - posPersonajeVec.z;
-//            float distancia = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-//
-//            if (distancia < 0.2f) { // Puedes ajustar el umbral
-//                ventana.toggle(); // Abre o cierra
-//                break; // Solo una ventana por clic
-//            }
-//        }
-//    }
-
     //----------------Arboles----------------
     public Shape3D crearPlanoArbolDobleCara(float x, float y, float z, float ancho, float altura, String tex) {
         Appearance apariencia = Textura.getInstance().crearTexturas(tex);
