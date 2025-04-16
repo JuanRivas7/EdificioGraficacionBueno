@@ -51,17 +51,19 @@ public class Colisiones {
                (maxZ1 > minZ2) && (minZ1 < maxZ2);
     }
     
-    private Transform3D obtenerTransformacionAbsoluta(TransformGroup tg) {
-        Transform3D result = new Transform3D();
-        tg.getTransform(result);
-        
-        // Acumular transforms de los padres
-        while (tg.getParent() instanceof TransformGroup) {
-            tg = (TransformGroup) tg.getParent();
-            Transform3D parentTransform = new Transform3D();
-            tg.getTransform(parentTransform);
-            result.mul(parentTransform, result);
-        }
-        return result;
+   private Transform3D obtenerTransformacionAbsoluta(TransformGroup tg) {
+    Transform3D result = new Transform3D();
+    if (tg == null) return result;
+    
+    tg.getTransform(result);
+    
+    // Acumular transforms de los padres
+    while (tg.getParent() instanceof TransformGroup) {
+        tg = (TransformGroup) tg.getParent();
+        Transform3D parentTransform = new Transform3D();
+        tg.getTransform(parentTransform);
+        result.mul(parentTransform, result);
     }
+    return result;
+}
 }

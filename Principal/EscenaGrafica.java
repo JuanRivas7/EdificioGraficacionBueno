@@ -72,10 +72,12 @@ public class EscenaGrafica {
         EscalarTG(tgPiso, 5.0f);
         //-----------PAREDES Y VENTANAS------------
         crearParedCompleta(-0.2f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
-        crearParedCompleta(-1.1f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
+        crearParedCompleta(-1.f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
         crearVentana(0.0f, 0.05f, 1.0f, 0.1f, 0.1f, 0.05f, 0);
+        crearVentanaCerrada(0.0f, 0.2f, 6.0f, 0.4f, 0.4f, 0.1f, 0);
         crearPuerta(0.0f, 0.15f, -0.5f, 0.2f, 0.3f, 0.05f, 90);
         agregarArbol(0.0f, -0.08f, 0.0f);
+        crearEscritorioCompu(0.0f, 0.2f, 4.0f, 0.4f, 0.4f, 0.1f, 0);
         tgMundo.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         tgPiso.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         //||--------------MOVER EL MOUSE----------||
@@ -161,7 +163,16 @@ public class EscenaGrafica {
         tgMundo.addChild(ventana);
         listaVentanas.add(ventana);
     }
-
+    public void crearVentanaCerrada(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
+        VentanaCerrada ventanaC = new VentanaCerrada(x, y, z, ancho, alto, profundidad, rotYGrados);
+        tgMundo.addChild(ventanaC);
+    }
+    public void crearEscritorioCompu(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
+        EscritorioConOrdenador escritorio = new EscritorioConOrdenador(x, y, z, ancho, alto, profundidad, rotYGrados);
+        tgMundo.addChild(escritorio);
+        listaBoxs.add(escritorio.getCajaColision());
+        listaTransform.add(escritorio.getTransformGroupCaja());
+    }
     public void crearPuerta(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
         Puerta Puerta1 = new Puerta(x, y, z, ancho, alto, profundidad, rotYGrados);
         tgMundo.addChild(Puerta1);
