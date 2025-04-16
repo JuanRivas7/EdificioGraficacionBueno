@@ -4,12 +4,13 @@
  */
 package Principal;
 
-import com.fazecast.jSerialComm.SerialPort;
+
 import com.sun.j3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.geometry.Box;
 import com.sun.j3d.utils.geometry.Primitive;
 import com.sun.j3d.utils.geometry.Sphere;
+
 import java.awt.List;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,9 +31,11 @@ import javax.vecmath.Vector3f;
 import steve.crearEscenaGrafica;
 import java.util.ArrayList;
 import javax.media.j3d.Appearance;
+import javax.media.j3d.Link;
 import javax.media.j3d.Material;
 import javax.media.j3d.QuadArray;
 import javax.media.j3d.Shape3D;
+import javax.media.j3d.SharedGroup;
 import javax.media.j3d.TransparencyAttributes;
 import javax.vecmath.Point3f;
 import javax.vecmath.TexCoord2f;
@@ -42,6 +45,9 @@ import javax.vecmath.TexCoord2f;
  * @author jriva
  */
 public class EscenaGrafica {
+    SalonDeClasesBuilder salonBuilder;
+
+InstanciadorObjetos3D instanciador;
 
     ArrayList<TransformGroup> listaTransform = new ArrayList<>();
     ArrayList<Box> listaBoxs = new ArrayList<>();
@@ -55,10 +61,13 @@ public class EscenaGrafica {
     TransformGroup tgPiso;
     crearEscenaGrafica steve = new crearEscenaGrafica();
     Point3d posPersonaje = new Point3d(0, 0, 0);
-    SerialPort puerto;
+   
      Colisiones Colisiones = new Colisiones(); 
 
     public EscenaGrafica() {
+        RepositorioObjetos3D.inicializar();
+       
+
         //------- MUNDO--------
         Box bxMundo = new Box(-16.0f, 20.0f, 20.0f, paraTextura, textura.crearTexturas("cielo_1.jpg"));//c.setColor(38, 238, 240)
         Transform3D t3dMundo = new Transform3D();
@@ -72,12 +81,10 @@ public class EscenaGrafica {
         EscalarTG(tgPiso, 5.0f);
         //-----------PAREDES Y VENTANAS------------
         crearParedCompleta(-0.2f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
-        crearParedCompleta(-1.f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
+        crearParedCompleta(-1.1f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
         crearVentana(0.0f, 0.05f, 1.0f, 0.1f, 0.1f, 0.05f, 0);
-        crearVentanaCerrada(0.0f, 0.2f, 6.0f, 0.4f, 0.4f, 0.1f, 0);
         crearPuerta(0.0f, 0.15f, -0.5f, 0.2f, 0.3f, 0.05f, 90);
         agregarArbol(0.0f, -0.08f, 0.0f);
-        crearEscritorioCompu(0.0f, 0.2f, 4.0f, 0.4f, 0.4f, 0.1f, 0);
         tgMundo.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         tgPiso.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         //||--------------MOVER EL MOUSE----------||
@@ -97,9 +104,124 @@ public class EscenaGrafica {
         steve.girarTG(steve.obtenerPanza(), 180, "Y");
         objRaiz.addChild(steve.obtenerCuerpo());
         configurarIluminacion(objRaiz);
-        conectarPuerto();
+        instanciador = new InstanciadorObjetos3D(tgMundo, listaTransform, listaBoxs);
+        
+//        // Instanciar varias mesas con colisión en una grilla
+//InstanciadorObjetos3D.Posicion3D[] posicionesSillas = instanciador.generarGrilla(-1f, -1f, 2, 1, 1.0f, 1.0f);
+//instanciador.agregarMultiplesInstanciasConColision(
+//    RepositorioObjetos3D.silla,
+//    posicionesSillas,
+//    0.3f, 0.2f, 0.3f
+//);
 
+// Instanciar sillas individuales
+//instanciador.agregarInstanciaConColision(RepositorioObjetos3D.silla, 2.5f, 0f, -1f, 0.15f, 0.25f, 0.15f);
+// Ventanas del salón (solo 2 interactivas)
+agregarVentanaInteractiva( 1.5f, 0.3f, 2.0f, 0.4f, 0.4f, 0.05f,  0f, true);  // Interactiva
+agregarVentanaInteractiva(-1.5f, 0.3f, 2.0f, 0.4f, 0.4f, 0.05f,  0f, true);  // Interactiva
+agregarVentanaInteractiva( 1.5f, 0.3f, -2.0f, 0.4f, 0.4f, 0.05f, 180f, false); // Fija
+agregarVentanaInteractiva(-1.5f, 0.3f, -2.0f, 0.4f, 0.4f, 0.05f, 180f, false); // Fija
+
+ salonBuilder = new SalonDeClasesBuilder(this, instanciador);
+
+// Crear un salón en el centro
+salonBuilder.construirSalon(0f, 0f);
+
+// Crear otro salón separado a la derecha
+salonBuilder.construirSalon(8f, 0f);
+
+
+//         agregarInstancia(RepositorioObjetos3D.mesa, 0.5f, 0f, 0f);
+//         agregarInstancia(RepositorioObjetos3D.silla, 1f, 0f, 0f);
+//          agregarInstancia(RepositorioObjetos3D.mesa, 1f, 0f, 0f);
+//         agregarInstancia(RepositorioObjetos3D.silla, 2f, 0f, 0f);
+//          agregarInstancia(RepositorioObjetos3D.mesa, 2f, 0f, 0f);
+//         agregarInstancia(RepositorioObjetos3D.silla, 3f, 0f, 0f);
+//      
+//         // Mesa 60cm x 40cm x 60cm aprox (en metros: 0.3f, 0.2f, 0.3f)
+//agregarInstanciaConColision(RepositorioObjetos3D.mesa, 1.5f, 0f, 0f, 0.3f, 0.2f, 0.3f);
+//
+//// Silla más chica
+//agregarInstanciaConColision(RepositorioObjetos3D.silla, -1.5f, 0f, 0f, 0.15f, 0.25f, 0.15f);
     }
+    public void agregarVentanaInteractiva(float x, float y, float z, float ancho, float alto, float profundo, float rotYGrados, boolean esInteractiva) {
+    Ventana ventana = new Ventana(x, y, z, ancho, alto, profundo, rotYGrados);
+    tgMundo.addChild(ventana);
+    listaVentanas.add(ventana); // Solo las interactuables las vamos a escanear
+
+    // Si es interactiva, agregar detector de proximidad
+    if (esInteractiva) {
+        crearDetectorProximidad(ventana, 0.6f); // Detecta cuando el personaje está cerca
+    }
+}
+
+    
+    public void agregarInstanciaConColision(SharedGroup objeto, float x, float y, float z, float ancho, float alto, float profundo) {
+    // 1. Transformación de posición
+    Transform3D t3d = new Transform3D();
+    t3d.setTranslation(new Vector3f(x, y, z));
+    
+    // 2. Crear el grupo de transformación
+    TransformGroup tg = new TransformGroup(t3d);
+    tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE); // Para colisiones
+
+    // 3. Agregar objeto visual
+    tg.addChild(new Link(objeto));
+    tgMundo.addChild(tg);
+
+    // 4. Crear caja de colisión (invisible)
+    Appearance invisible = new Appearance();
+    TransparencyAttributes t = new TransparencyAttributes(TransparencyAttributes.NICEST, 1.0f);
+    invisible.setTransparencyAttributes(t);
+    
+    Box boxColision = new Box(ancho, alto, profundo, invisible); // tamaño aproximado del objeto
+    tg.addChild(boxColision);
+
+    // 5. Registrar para detección de colisiones
+    listaTransform.add(tg);
+    listaBoxs.add(boxColision);
+}
+
+    public void agregarInstancia(SharedGroup objeto, float x, float y, float z) {
+    Transform3D t3d = new Transform3D();
+    t3d.setTranslation(new Vector3f(x, y, z));
+
+    TransformGroup tg = new TransformGroup(t3d);
+    tg.addChild(new Link(objeto));
+    tgMundo.addChild(tg);
+}
+   
+
+
+    public void registrarControlesPorTeclado(java.awt.Component canvas) {
+    canvas.setFocusable(true);
+    canvas.requestFocus();
+    canvas.addKeyListener(new java.awt.event.KeyAdapter() {
+        @Override
+        public void keyPressed(java.awt.event.KeyEvent e) {
+            int keyCode = e.getKeyCode();
+            switch (keyCode) {
+                case java.awt.event.KeyEvent.VK_W:
+                    MoverAdelante(tgMundo, steve.obtenerPanza(), 0.8);
+                    steve.caminar();
+                    break;
+                case java.awt.event.KeyEvent.VK_S:
+                    MoverAtras(tgMundo, steve.obtenerPanza(), 0.8);
+                    steve.caminar();
+                    break;
+                case java.awt.event.KeyEvent.VK_A:
+                    rotarTG(tgMundo, -5, "Y", posPersonaje);
+                    steve.caminar();
+                    break;
+                case java.awt.event.KeyEvent.VK_D:
+                    rotarTG(tgMundo, 5, "Y", posPersonaje);
+                    steve.caminar();
+                    break;
+            }
+        }
+    });
+}
+
 
    private boolean verificarColisionConTransformacion(Transform3D nuevaTransform) {
     // Guardar transformación actual del mundo
@@ -163,16 +285,7 @@ public class EscenaGrafica {
         tgMundo.addChild(ventana);
         listaVentanas.add(ventana);
     }
-    public void crearVentanaCerrada(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
-        VentanaCerrada ventanaC = new VentanaCerrada(x, y, z, ancho, alto, profundidad, rotYGrados);
-        tgMundo.addChild(ventanaC);
-    }
-    public void crearEscritorioCompu(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
-        EscritorioConOrdenador escritorio = new EscritorioConOrdenador(x, y, z, ancho, alto, profundidad, rotYGrados);
-        tgMundo.addChild(escritorio);
-        //listaBoxs.add(escritorio.getCajaColision());
-       // listaTransform.add(escritorio.getTransformGroupCaja());
-    }
+
     public void crearPuerta(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
         Puerta Puerta1 = new Puerta(x, y, z, ancho, alto, profundidad, rotYGrados);
         tgMundo.addChild(Puerta1);
@@ -322,63 +435,7 @@ public class EscenaGrafica {
         }
     }
 
-    private void conectarPuerto() {
-        puerto = SerialPort.getCommPort("COM5");
-        puerto.setBaudRate(9600);
-        puerto.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-
-        if (puerto.openPort()) {
-            System.out.println("Puerto abierto");
-
-            Thread hilo;
-            hilo = new Thread(() -> {
-                try {
-                    InputStream entrada = puerto.getInputStream();
-                    StringBuilder mensaje = new StringBuilder();
-
-                    while (true) {
-                        int dato = entrada.read();
-                        if (dato == -1) {
-                            continue;
-                        }
-
-                        char caracter = (char) dato;
-                        if (caracter == '\n') {
-                            String linea = mensaje.toString().trim();
-                            mensaje.setLength(0); // Limpia el buffer
-                            System.out.println("Recibido: " + linea);
-                            if (linea.equals("Presionado  Boton")) {
-                                verificarVentanasCercanasYTogglear();
-                                verificarPuertasCercanasYTogglear();
-                            }
-                            if (linea.equals("Suelto  Arriba") || linea.equals("Presionado  Arriba")) {
-                                MoverAdelante(tgMundo, steve.obtenerPanza(),0.8);
-                                steve.caminar();
-                            } else if (linea.equals("Suelto  Abajo") || linea.equals("Presionado  Abajo")) {
-                                MoverAtras(tgMundo, steve.obtenerPanza(), 0.8);
-                                steve.caminar();
-                            } else if (linea.equals("Suelto  Derecha") || linea.equals("Presionado  Derecha")) {
-                                rotarTG(tgMundo, 5, "Y", posPersonaje);
-                                steve.caminar();
-                            } else if (linea.equals("Suelto  Izquierda") || linea.equals("Presionado  Izquierda")) {
-                                rotarTG(tgMundo, -5, "Y", posPersonaje);
-                                steve.caminar();
-                            }
-                        } else {
-                            mensaje.append(caracter);
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-
-            hilo.start();
-
-        } else {
-            System.out.println("No se pudo abrir el puerto");
-        }
-    }
+   
 
   
 private boolean verificarColisiones(Vector3d movimiento) {

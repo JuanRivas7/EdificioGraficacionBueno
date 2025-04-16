@@ -4,7 +4,7 @@ package Principal;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
-import java.awt.Toolkit;
+
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
 
@@ -28,19 +28,21 @@ public class EdificioD extends javax.swing.JFrame {
         
         GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
         Canvas3D lienzo = new Canvas3D(config);
+        
         lienzo.setBounds(50, 50, 1000, 600);
         this.add(lienzo);
         this.setBounds(50, 50, 1080, 720);
         BranchGroup Scene = new BranchGroup();
         creaEscena = new EscenaGrafica();
+         creaEscena.registrarControlesPorTeclado(lienzo); // ← Esta línea permite usar teclas WASD
         Scene = creaEscena.objRaiz;
+
         SimpleUniverse n = new SimpleUniverse(lienzo);
         n.getViewingPlatform().setNominalViewingTransform();
         n.addBranchGraph(Scene);
         setLocationRelativeTo(null);
         this.setTitle("Edificio D");
-        Image icono = Toolkit.getDefaultToolkit().getImage("icono.png");
-        this.setIconImage(icono);
+        
     }
     
     
