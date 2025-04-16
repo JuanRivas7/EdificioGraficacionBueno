@@ -1,137 +1,102 @@
 package Principal;
-
+import com.sun.j3d.utils.geometry.Box;
+import com.sun.j3d.utils.geometry.Cylinder;
 import javax.media.j3d.*;
 import javax.vecmath.*;
-import com.sun.j3d.utils.geometry.*;
-import com.sun.j3d.utils.universe.*;
-import com.sun.j3d.utils.image.TextureLoader;
 
 public class EscritorioConOrdenador extends BranchGroup {
 
-    private TransformGroup tgCajaColision;
-    private Box cajaColision;
+    public EscritorioConOrdenador(float x, float y, float z, float gradosGiro, float ancho, float profundidad, float alto) {
+        float grosor = 0.03f;
+        float pataGrosor = 0.02f;
 
-    public EscritorioConOrdenador(float posX, float posY, float posZ, float rotY, float ancho, float alto, float profundidad) {
-        // Transformación de la posición y rotación
+        // Apariencias
+        Appearance aparienciaMadera = new Appearance();
+        aparienciaMadera.setColoringAttributes(new ColoringAttributes(new Color3f(0.55f, 0.27f, 0.07f), ColoringAttributes.SHADE_FLAT));
+
+        Appearance aparienciaNegra = new Appearance();
+        aparienciaNegra.setColoringAttributes(new ColoringAttributes(new Color3f(0.1f, 0.1f, 0.1f), ColoringAttributes.SHADE_FLAT));
+
+        Appearance aparienciaGris = new Appearance();
+        aparienciaGris.setColoringAttributes(new ColoringAttributes(new Color3f(0.6f, 0.6f, 0.6f), ColoringAttributes.SHADE_FLAT));
+
+        // Transformación principal
         Transform3D transform = new Transform3D();
         Transform3D rotacion = new Transform3D();
-        rotacion.rotY(Math.toRadians(rotY));
-        transform.setTranslation(new Vector3f(posX, posY, posZ));
+        rotacion.rotY(Math.toRadians(gradosGiro));
+        transform.setTranslation(new Vector3f(x, y, z));
         transform.mul(rotacion);
 
         TransformGroup tgPrincipal = new TransformGroup(transform);
-        this.addChild(tgPrincipal);
 
-        // Apariencia de la madera
-        Appearance aparienciaMadera = new Appearance();
-        ColoringAttributes colorMadera = new ColoringAttributes(new Color3f(0.5f, 0.3f, 0.1f), ColoringAttributes.SHADE_FLAT);
-        aparienciaMadera.setColoringAttributes(colorMadera);
+        // ---------- TABLERO ----------
+        float anchoTabla = ancho + 0.2f;  // Se alarga un poco más para cubrir bien los objetos
+        Box tablero = new Box(anchoTabla / 2, grosor / 2, profundidad / 2, aparienciaMadera);
+        Transform3D tTablero = new Transform3D();
+        tTablero.setTranslation(new Vector3f(0.0f, alto / 2, 0.0f));
+        TransformGroup tgTablero = new TransformGroup(tTablero);
+        tgTablero.addChild(tablero);
+        tgPrincipal.addChild(tgTablero);
 
-        Appearance aparienciaNegra = new Appearance();
-        ColoringAttributes colorNegro = new ColoringAttributes(new Color3f(0.0f, 0.0f, 0.0f), ColoringAttributes.SHADE_FLAT);
-        aparienciaNegra.setColoringAttributes(colorNegro);
+        // ---------- PATAS ----------
+        float offsetX = anchoTabla / 2 - pataGrosor / 2;
+        float offsetZ = profundidad / 2 - pataGrosor / 2;
 
-        float grosor = 0.05f;
+        float[] posicionesX = { offsetX, -offsetX };
+        float[] posicionesZ = { offsetZ, -offsetZ };
 
-        // Tapa de la mesa
-        Box tapa = new Box(ancho / 2, grosor / 2, profundidad / 2, aparienciaMadera);
-        Transform3D tTapa = new Transform3D();
-        tTapa.setTranslation(new Vector3f(0.0f, alto / 2 - grosor / 2, 0.0f));
-        TransformGroup tgTapa = new TransformGroup(tTapa);
-        tgTapa.addChild(tapa);
-        tgPrincipal.addChild(tgTapa);
+        for (float px : posicionesX) {
+            for (float pz : posicionesZ) {
+                Box pata = new Box(pataGrosor / 2, alto / 2, pataGrosor / 2, aparienciaMadera);
+                Transform3D tPata = new Transform3D();
+                tPata.setTranslation(new Vector3f(px, alto / 4, pz));
+                TransformGroup tgPata = new TransformGroup(tPata);
+                tgPata.addChild(pata);
+                tgPrincipal.addChild(tgPata);
+            }
+        }
 
-        // Patas de la mesa (4 patas)
-        float pataGrosor = 0.05f;
-        float pataAltura = alto / 3;
+        // ---------- TRAVESAÑO TRASERO ----------
+        Box travesaño = new Box(anchoTabla / 2 - pataGrosor, grosor / 4, grosor / 4, aparienciaMadera);
+        Transform3D tTravesaño = new Transform3D();
+        tTravesaño.setTranslation(new Vector3f(0.0f, grosor / 2, -profundidad / 2 + pataGrosor));
+        TransformGroup tgTravesaño = new TransformGroup(tTravesaño);
+        tgTravesaño.addChild(travesaño);
+        tgPrincipal.addChild(tgTravesaño);
 
-        // Pata izquierda frontal
-        Box pataIzq = new Box(pataGrosor / 2, pataAltura, pataGrosor / 2, aparienciaNegra);
-        Transform3D tPataIzq = new Transform3D();
-        tPataIzq.setTranslation(new Vector3f(-ancho / 2 + pataGrosor / 2, -alto / 2 + pataAltura / 2, profundidad / 2 - pataGrosor / 2));
-        TransformGroup tgPataIzq = new TransformGroup(tPataIzq);
-        tgPataIzq.addChild(pataIzq);
-        tgPrincipal.addChild(tgPataIzq);
-
-        // Pata derecha frontal
-        Box pataDer = new Box(pataGrosor / 2, pataAltura, pataGrosor / 2, aparienciaNegra);
-        Transform3D tPataDer = new Transform3D();
-        tPataDer.setTranslation(new Vector3f(ancho / 2 - pataGrosor / 2, -alto / 2 + pataAltura / 2, profundidad / 2 - pataGrosor / 2));
-        TransformGroup tgPataDer = new TransformGroup(tPataDer);
-        tgPataDer.addChild(pataDer);
-        tgPrincipal.addChild(tgPataDer);
-
-        // Pata izquierda trasera
-        Box pataIzqTrasera = new Box(pataGrosor / 2, pataAltura, pataGrosor / 2, aparienciaNegra);
-        Transform3D tPataIzqTrasera = new Transform3D();
-        tPataIzqTrasera.setTranslation(new Vector3f(-ancho / 2 + pataGrosor / 2, -alto / 2 + pataAltura / 2, -profundidad / 2 + pataGrosor / 2));
-        TransformGroup tgPataIzqTrasera = new TransformGroup(tPataIzqTrasera);
-        tgPataIzqTrasera.addChild(pataIzqTrasera);
-        tgPrincipal.addChild(tgPataIzqTrasera);
-
-        // Pata derecha trasera
-        Box pataDerTrasera = new Box(pataGrosor / 2, pataAltura, pataGrosor / 2, aparienciaNegra);
-        Transform3D tPataDerTrasera = new Transform3D();
-        tPataDerTrasera.setTranslation(new Vector3f(ancho / 2 - pataGrosor / 2, -alto / 2 + pataAltura / 2, -profundidad / 2 + pataGrosor / 2));
-        TransformGroup tgPataDerTrasera = new TransformGroup(tPataDerTrasera);
-        tgPataDerTrasera.addChild(pataDerTrasera);
-        tgPrincipal.addChild(tgPataDerTrasera);
-
-        // Ordenador (Monitor y CPU)
-        // Monitor
-        Box monitor = new Box(ancho / 6, alto / 10, grosor / 2, aparienciaNegra);
+        // ---------- MONITOR ----------
+        Box monitor = new Box(0.15f, 0.1f, 0.01f, aparienciaNegra);
         Transform3D tMonitor = new Transform3D();
-        tMonitor.setTranslation(new Vector3f(0.0f, alto / 2 + alto / 10, 0.0f));
+        tMonitor.setTranslation(new Vector3f(-0.1f, alto / 2 + 0.1f, -profundidad / 4));
         TransformGroup tgMonitor = new TransformGroup(tMonitor);
         tgMonitor.addChild(monitor);
         tgPrincipal.addChild(tgMonitor);
 
-        // Base del monitor
-        Box baseMonitor = new Box(ancho / 12, grosor / 2, grosor / 4, aparienciaNegra);
-        Transform3D tBaseMonitor = new Transform3D();
-        tBaseMonitor.setTranslation(new Vector3f(0.0f, alto / 2, 0.0f));
-        TransformGroup tgBaseMonitor = new TransformGroup(tBaseMonitor);
-        tgBaseMonitor.addChild(baseMonitor);
-        tgPrincipal.addChild(tgBaseMonitor);
+        // ---------- BASE MONITOR ----------
+        Cylinder baseMonitor = new Cylinder(0.015f, 0.06f, aparienciaGris);
+        Transform3D tBase = new Transform3D();
+        tBase.setTranslation(new Vector3f(-0.1f, alto / 2 + 0.03f, -profundidad / 4));
+        TransformGroup tgBase = new TransformGroup(tBase);
+        tgBase.addChild(baseMonitor);
+        tgPrincipal.addChild(tgBase);
 
-        // CPU
-        Box cpu = new Box(ancho / 8, alto / 5, grosor / 2, aparienciaNegra);
+        // ---------- TECLADO ----------
+        Box teclado = new Box(0.12f, 0.01f, 0.04f, aparienciaNegra);
+        Transform3D tTeclado = new Transform3D();
+        tTeclado.setTranslation(new Vector3f(0.0f, alto / 2 + 0.015f, 0.0f));
+        TransformGroup tgTeclado = new TransformGroup(tTeclado);
+        tgTeclado.addChild(teclado);
+        tgPrincipal.addChild(tgTeclado);
+
+        // ---------- CPU ----------
+        Box cpu = new Box(0.05f, 0.15f, 0.1f, aparienciaNegra);
         Transform3D tCPU = new Transform3D();
-        tCPU.setTranslation(new Vector3f(ancho / 2 - grosor - ancho / 8, -alto / 2 + alto / 5, 0.0f));
+        tCPU.setTranslation(new Vector3f(anchoTabla / 2 - 0.06f, 0.15f, 0.0f));
         TransformGroup tgCPU = new TransformGroup(tCPU);
         tgCPU.addChild(cpu);
         tgPrincipal.addChild(tgCPU);
 
-        // Base de la CPU
-        Box baseCPU = new Box(ancho / 8, grosor / 2, grosor / 4, aparienciaNegra);
-        Transform3D tBaseCPU = new Transform3D();
-        tBaseCPU.setTranslation(new Vector3f(ancho / 2 - grosor - ancho / 8, -alto / 2, 0.0f));
-        TransformGroup tgBaseCPU = new TransformGroup(tBaseCPU);
-        tgBaseCPU.addChild(baseCPU);
-        tgPrincipal.addChild(tgBaseCPU);
-
-        // Caja de colisión invisible
-        Appearance aparCaja = new Appearance();
-        TransparencyAttributes ta = new TransparencyAttributes(TransparencyAttributes.NICEST, 1.0f);
-        aparCaja.setTransparencyAttributes(ta);
-
-        cajaColision = new Box(ancho / 2, alto / 2, profundidad / 2, Box.GENERATE_NORMALS, aparCaja);
-        Transform3D tCaja = new Transform3D();
-        tCaja.setTranslation(new Vector3f(0.0f, 0.0f, 0.0f));
-        tgCajaColision = new TransformGroup(tCaja);
-        tgCajaColision.addChild(cajaColision);
-        tgPrincipal.addChild(tgCajaColision);
-
-        this.compile();
-    }
-
-    // Retornar la caja de colisión
-    public Box getCajaColision() {
-        return cajaColision;
-    }
-
-    // Retornar el transformGroup de la caja de colisión
-    public TransformGroup getTransformGroupCaja() {
-        return tgCajaColision;
+        this.addChild(tgPrincipal);
     }
 }
+

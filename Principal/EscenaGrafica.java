@@ -170,8 +170,8 @@ public class EscenaGrafica {
     public void crearEscritorioCompu(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
         EscritorioConOrdenador escritorio = new EscritorioConOrdenador(x, y, z, ancho, alto, profundidad, rotYGrados);
         tgMundo.addChild(escritorio);
-        listaBoxs.add(escritorio.getCajaColision());
-        listaTransform.add(escritorio.getTransformGroupCaja());
+        //listaBoxs.add(escritorio.getCajaColision());
+       // listaTransform.add(escritorio.getTransformGroupCaja());
     }
     public void crearPuerta(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
         Puerta Puerta1 = new Puerta(x, y, z, ancho, alto, profundidad, rotYGrados);
