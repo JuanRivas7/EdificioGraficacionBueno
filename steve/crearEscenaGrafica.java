@@ -13,6 +13,7 @@ import javax.media.j3d.DirectionalLight;
 import javax.media.j3d.Material;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
+import javax.media.j3d.TransparencyAttributes;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -20,6 +21,7 @@ import javax.vecmath.Vector3f;
 
 public class crearEscenaGrafica {
 
+    Box cajaPersonaje;
     int paraTextura = Primitive.GENERATE_NORMALS + Primitive.GENERATE_TEXTURE_COORDS;
     Textura textura = new Textura();
     int pasos = 0;
@@ -76,7 +78,7 @@ public class crearEscenaGrafica {
         bxBraDer.setAppearance(0, mano);
         Sphere spHomDer = new Sphere(0.05f, c.setColor(0, 0, 0)); //Esfera para que lo se le safe el hombro a Steve
         Sphere spCodoDer = new Sphere(0.05f, c.setColor(0, 0, 0)); //Esfera para que gire el CODO
-        
+
         //-----------------------BRAZO DE LA IZQUIERDA------------------------
         Box bxHomIzq = new Box(0.1f, 0.15f, 0.1f, paraTextura, hombro); // HOMBRO IZQ de steve
         Box bxBraIzq = new Box(0.1f, 0.15f, 0.1f, paraTextura, manoAtras); // BRAZO IZQ de steve
@@ -186,11 +188,20 @@ public class crearEscenaGrafica {
         tgSpPiernaDer.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         tgSpPiernaIzq.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         EscalarTG(tgPanza, 0.01f);
-        
+
         MouseRotate myMouseRotate = new MouseRotate(); //permite utilizar el comportamiento que tiene el Mouse
         myMouseRotate.setTransformGroup(tgPanza);
         myMouseRotate.setSchedulingBounds(new BoundingSphere());
-        
+        //-------Caja COLISION PANZA---------
+        // En el constructor, modificar esta parte:
+//-------Caja COLISION PANZA---------
+        Appearance invisibleApp = new Appearance();
+        TransparencyAttributes ta = new TransparencyAttributes();
+        ta.setTransparencyMode(TransparencyAttributes.BLENDED);
+        ta.setTransparency(1.0f); // 1.0 = totalmente invisible
+        invisibleApp.setTransparencyAttributes(ta);
+        cajaPersonaje = new Box(0.5f, 0.8f, 0.14f, paraTextura, invisibleApp);
+        tgPanza.addChild(cajaPersonaje);
         //-------------------------DIAGRAMA--------------------------
         objRaiz.addChild(myMouseRotate);
         objRaiz.addChild(tgPanza);
@@ -468,4 +479,7 @@ public class crearEscenaGrafica {
         return tgPanza;
     }
 
+    public Box cajaColisionPersonaje() {
+        return cajaPersonaje;
+    }
 }//final clase

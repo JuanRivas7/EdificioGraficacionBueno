@@ -10,6 +10,7 @@ import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.geometry.Box;
 import com.sun.j3d.utils.geometry.Primitive;
 import com.sun.j3d.utils.geometry.Sphere;
+import java.awt.List;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -42,6 +43,8 @@ import javax.vecmath.TexCoord2f;
  */
 public class EscenaGrafica {
 
+    ArrayList<TransformGroup> listaTransform = new ArrayList<>();
+    ArrayList<Box> listaBoxs = new ArrayList<>();
     ArrayList<Ventana> listaVentanas = new ArrayList<>();
     ArrayList<Puerta> listaPuerta = new ArrayList<>();
     BranchGroup objRaiz = new BranchGroup();
@@ -53,10 +56,11 @@ public class EscenaGrafica {
     crearEscenaGrafica steve = new crearEscenaGrafica();
     Point3d posPersonaje = new Point3d(0, 0, 0);
     SerialPort puerto;
+     Colisiones Colisiones = new Colisiones(); 
 
     public EscenaGrafica() {
         //------- MUNDO--------
-        Box bxMundo = new Box(-8.0f, 10.0f, 10.0f, paraTextura, textura.crearTexturas("cielo_1.jpg"));//c.setColor(38, 238, 240)
+        Box bxMundo = new Box(-16.0f, 20.0f, 20.0f, paraTextura, textura.crearTexturas("cielo_1.jpg"));//c.setColor(38, 238, 240)
         Transform3D t3dMundo = new Transform3D();
         t3dMundo.set(new Vector3d(0.0f, -0.15f, 0.0f));
         tgMundo = new TransformGroup(t3dMundo);
@@ -67,14 +71,15 @@ public class EscenaGrafica {
         tgPiso = new TransformGroup(t3dPiso);
         EscalarTG(tgPiso, 5.0f);
         //-----------PAREDES Y VENTANAS------------
-        //crearParedCompleta(-0.2f, -0.1f, 0.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, -10);
+        crearParedCompleta(-0.2f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
+        crearParedCompleta(-1.1f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
         crearVentana(0.0f, 0.05f, 1.0f, 0.1f, 0.1f, 0.05f, 0);
         crearPuerta(0.0f, 0.15f, -0.5f, 0.2f, 0.3f, 0.05f, 90);
         agregarArbol(0.0f, -0.08f, 0.0f);
         tgMundo.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         tgPiso.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         //||--------------MOVER EL MOUSE----------||
-        EscalarTG(tgMundo, 5.0f);
+        //EscalarTG(tgMundo, 5.0f);
         MouseRotate myMouseRotate = new MouseRotate();
         myMouseRotate.setTransformGroup(tgMundo);
         myMouseRotate.setSchedulingBounds(new BoundingSphere());
@@ -85,7 +90,7 @@ public class EscenaGrafica {
         //objRaiz.addChild(tgPiso);
         objRaiz.addChild(myMouseRotate);
         objRaiz.addChild(tgMundo);
-        steve.Posicion(0, -0.02f, 0);
+        steve.Posicion(0, 0.1f, 0);
         tgMundo.addChild(tgPiso);
         steve.girarTG(steve.obtenerPanza(), 180, "Y");
         objRaiz.addChild(steve.obtenerCuerpo());
@@ -93,6 +98,34 @@ public class EscenaGrafica {
         conectarPuerto();
 
     }
+
+   private boolean verificarColisionConTransformacion(Transform3D nuevaTransform) {
+    // Guardar transformación actual del mundo
+    Transform3D transformacionOriginal = new Transform3D();
+    tgMundo.getTransform(transformacionOriginal);
+    
+    // Aplicar transformación temporal
+    tgMundo.setTransform(nuevaTransform);
+    
+    // Verificar colisión con todos los objetos
+    boolean colisionDetectada = false;
+    for (int i = 0; i < listaTransform.size(); i++) {
+        if (Colisiones.hayColision(
+            steve.obtenerPanza(), 
+            steve.cajaColisionPersonaje(),
+            listaTransform.get(i), 
+            listaBoxs.get(i)
+        )) {
+            colisionDetectada = true;
+            break;
+        }
+    }
+    
+    // Restaurar transformación original
+    tgMundo.setTransform(transformacionOriginal);
+    
+    return colisionDetectada;
+}
 
     private void crearParedCompleta(float x, float y, float z,
             float ancho, float alto, float profundidad,
@@ -117,17 +150,18 @@ public class EscenaGrafica {
 
         // Crear grupo de transformación y añadir a la escena
         TransformGroup tgPared = new TransformGroup(t3dPared);
-        objRaiz.addChild(tgPared);
+        listaTransform.add(tgPared);
+        listaBoxs.add(bxPared);
+        tgMundo.addChild(tgPared);
         tgPared.addChild(bxPared);
-
     }
-// En tu clase EscenaGrafica
 
     public void crearVentana(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
         Ventana ventana = new Ventana(x, y, z, ancho, alto, profundidad, rotYGrados);
         tgMundo.addChild(ventana);
         listaVentanas.add(ventana);
     }
+
     public void crearPuerta(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
         Puerta Puerta1 = new Puerta(x, y, z, ancho, alto, profundidad, rotYGrados);
         tgMundo.addChild(Puerta1);
@@ -234,7 +268,10 @@ public class EscenaGrafica {
         Transform3D transformacionMundo = new Transform3D();
         tg.getTransform(transformacionMundo);
 
-        // Crear transformacion para mover el mundo desde el personaje
+        // Crear una copia para verificación
+        Transform3D nuevaTransform = new Transform3D(transformacionMundo);
+
+        // Calcular la rotación
         Transform3D traslacionAlOrigen = new Transform3D();
         traslacionAlOrigen.setTranslation(new Vector3d(
                 -personajePosition.x,
@@ -257,7 +294,6 @@ public class EscenaGrafica {
                 break;
         }
 
-        // Posición original
         Transform3D traslacionDeVuelta = new Transform3D();
         traslacionDeVuelta.setTranslation(new Vector3d(
                 personajePosition.x,
@@ -265,11 +301,14 @@ public class EscenaGrafica {
                 personajePosition.z
         ));
 
-        transformacionMundo.mul(traslacionDeVuelta, transformacionMundo);
-        transformacionMundo.mul(rotacion, transformacionMundo);
-        transformacionMundo.mul(traslacionAlOrigen, transformacionMundo);
+        nuevaTransform.mul(traslacionDeVuelta, nuevaTransform);
+        nuevaTransform.mul(rotacion, nuevaTransform);
+        nuevaTransform.mul(traslacionAlOrigen, nuevaTransform);
 
-        tg.setTransform(transformacionMundo);
+        // Verificar colisión antes de rotar
+        if (!verificarColisionConTransformacion(nuevaTransform)) {
+            tg.setTransform(nuevaTransform);
+        }
     }
 
     private void conectarPuerto() {
@@ -302,10 +341,10 @@ public class EscenaGrafica {
                                 verificarPuertasCercanasYTogglear();
                             }
                             if (linea.equals("Suelto  Arriba") || linea.equals("Presionado  Arriba")) {
-                                MoverAdelante(tgMundo, steve.obtenerPanza(), 0.15);
+                                MoverAdelante(tgMundo, steve.obtenerPanza(),0.8);
                                 steve.caminar();
                             } else if (linea.equals("Suelto  Abajo") || linea.equals("Presionado  Abajo")) {
-                                MoverAtras(tgMundo, steve.obtenerPanza(), 0.15);
+                                MoverAtras(tgMundo, steve.obtenerPanza(), 0.8);
                                 steve.caminar();
                             } else if (linea.equals("Suelto  Derecha") || linea.equals("Presionado  Derecha")) {
                                 rotarTG(tgMundo, 5, "Y", posPersonaje);
@@ -330,60 +369,124 @@ public class EscenaGrafica {
         }
     }
 
-    private void MoverAdelante(TransformGroup tgMundo, TransformGroup tgPersonaje, double velocidad) {
-        Transform3D t3dPersonaje = new Transform3D();
-        tgPersonaje.getTransform(t3dPersonaje);
+  
+private boolean verificarColisiones(Vector3d movimiento) {
+    // Crear transformación temporal
+    Transform3D tempTransform = new Transform3D();
+    tgMundo.getTransform(tempTransform);
+    
+    // Aplicar movimiento temporal
+    Vector3d posActual = new Vector3d();
+    tempTransform.get(posActual);
+    posActual.add(movimiento);
+    tempTransform.setTranslation(posActual);
+    
+    // Guardar transformación original
+    Transform3D originalTransform = new Transform3D();
+    tgMundo.getTransform(originalTransform);
+    
+    // Aplicar temporalmente
+    tgMundo.setTransform(tempTransform);
+    
+    // Verificar colisiones
+    boolean colisionDetectada = false;
+    for (int i = 0; i < listaTransform.size(); i++) {
+        if (Colisiones.hayColision(steve.obtenerPanza(), steve.cajaColisionPersonaje(),
+                                 listaTransform.get(i), listaBoxs.get(i))) {
+            colisionDetectada = true;
+            break;
+        }
+    }
+    
+    // Restaurar transformación
+    tgMundo.setTransform(originalTransform);
+    
+    return colisionDetectada;
+}
 
-        Matrix3d rotacion = new Matrix3d();
-        t3dPersonaje.getRotationScale(rotacion);
-
-        Vector3d frenteLocal = new Vector3d(0, 0, 15);
-
-        rotacion.transform(frenteLocal);
-        frenteLocal.scale(velocidad);
-
-        // Obtener la posicion del mundo
+private void MoverAdelante(TransformGroup tgMundo, TransformGroup tgPersonaje,double velocidad) {
+    Transform3D t3dPersonaje = new Transform3D();
+    tgPersonaje.getTransform(t3dPersonaje);
+    
+    Matrix3d rotacion = new Matrix3d();
+    t3dPersonaje.getRotationScale(rotacion);
+    
+    Vector3d direccion = new Vector3d(0, 0, -velocidad);
+    rotacion.transform(direccion);
+    
+    if (!verificarColisiones(direccion)) {
         Transform3D t3dMundo = new Transform3D();
         tgMundo.getTransform(t3dMundo);
-
-        Vector3d posicionMundo = new Vector3d();
-        t3dMundo.get(posicionMundo);
-
-        // Restar el frente para mover el mundo en dirección contraria al personaje
-        posicionMundo.sub(frenteLocal);
-
-        // Aplicar la nueva posicion
-        t3dMundo.setTranslation(posicionMundo);
+        Vector3d posicion = new Vector3d();
+        t3dMundo.get(posicion);
+        posicion.add(direccion);
+        t3dMundo.setTranslation(posicion);
         tgMundo.setTransform(t3dMundo);
     }
+}
+private boolean verificarColisionConMovimiento(Vector3d direccion) {
+    // 1. Guardar transformación actual
+    Transform3D transformOriginal = new Transform3D();
+    tgMundo.getTransform(transformOriginal);
+    
+    // 2. Aplicar movimiento temporal
+    Transform3D transformTemporal = new Transform3D(transformOriginal);
+    Vector3d posicionTemporal = new Vector3d();
+    transformOriginal.get(posicionTemporal);
+    posicionTemporal.add(direccion);
+    transformTemporal.setTranslation(posicionTemporal);
+    tgMundo.setTransform(transformTemporal);
+    
+    // 3. Verificar colisiones
+    boolean colisionDetectada = false;
+    for (int i = 0; i < listaTransform.size(); i++) {
+        if (Colisiones.hayColision(
+            steve.obtenerPanza(),
+            steve.cajaColisionPersonaje(),
+            listaTransform.get(i),
+            listaBoxs.get(i)
+        )) {
+            colisionDetectada = true;
+            break;
+        }
+    }
+    
+    // 4. Restaurar transformación original
+    tgMundo.setTransform(transformOriginal);
+    
+    return colisionDetectada;
+}
 
     private void MoverAtras(TransformGroup tgMundo, TransformGroup tgPersonaje, double velocidad) {
-        Transform3D t3dPersonaje = new Transform3D();
-        tgPersonaje.getTransform(t3dPersonaje);
-
-        Matrix3d rotacion = new Matrix3d();
-        t3dPersonaje.getRotationScale(rotacion);
-
-        Vector3d frenteLocal = new Vector3d(0, 0, -15);
-
-        rotacion.transform(frenteLocal);
-        frenteLocal.scale(velocidad);
-
-        // Obtener la posicion del mundo
+    // 1. Obtener transformación y rotación actual del personaje
+    Transform3D t3dPersonaje = new Transform3D();
+    tgPersonaje.getTransform(t3dPersonaje);
+    
+    Matrix3d rotacion = new Matrix3d();
+    t3dPersonaje.getRotationScale(rotacion);
+    
+    // 2. Calcular dirección de movimiento (inversa a MoverAdelante)
+    Vector3d direccion = new Vector3d(0, 0, velocidad); // Positivo en Z para mover atrás
+    rotacion.transform(direccion);
+    
+    // 3. Verificar colisiones antes de mover
+    if (!verificarColisionConMovimiento(direccion)) {
+        // 4. Aplicar movimiento si no hay colisión
         Transform3D t3dMundo = new Transform3D();
         tgMundo.getTransform(t3dMundo);
-
-        Vector3d posicionMundo = new Vector3d();
-        t3dMundo.get(posicionMundo);
-
-        // Restar el frente para mover el mundo en dirección contraria al personaje
-        posicionMundo.sub(frenteLocal);
-
-        // Aplicar la nueva posicion
-        t3dMundo.setTranslation(posicionMundo);
+        
+        Vector3d posicionActual = new Vector3d();
+        t3dMundo.get(posicionActual);
+        posicionActual.add(direccion);
+        
+        t3dMundo.setTranslation(posicionActual);
         tgMundo.setTransform(t3dMundo);
+    } else {
+        // Opcional: Feedback de colisión (sonido/vibración)
+        System.out.println("Colisión detectada al mover atrás");
     }
-
+}
+    
     private void verificarVentanasCercanasYTogglear() {
         for (Ventana ventana : listaVentanas) {
             ventana.toggle(); // Abre/cierra todas las ventanas sin verificar distancia
@@ -395,6 +498,7 @@ public class EscenaGrafica {
             puerta.toggle(); // Abre/cierra todas las ventanas sin verificar distancia
         }
     }
+
     //----------------Arboles----------------
     public Shape3D crearPlanoArbolDobleCara(float x, float y, float z, float ancho, float altura, String tex) {
         Appearance apariencia = Textura.getInstance().crearTexturas(tex);
