@@ -32,7 +32,7 @@ public class EdificioD extends javax.swing.JFrame {
         this.add(lienzo);
         this.setBounds(50, 50, 1080, 720);
         BranchGroup Scene = new BranchGroup();
-        creaEscena = new EscenaGrafica();
+        creaEscena = new EscenaGrafica(this);
         Scene = creaEscena.objRaiz;
         SimpleUniverse n = new SimpleUniverse(lienzo);
         n.getViewingPlatform().setNominalViewingTransform();

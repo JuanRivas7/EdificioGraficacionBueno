@@ -200,7 +200,7 @@ public class crearEscenaGrafica {
         ta.setTransparencyMode(TransparencyAttributes.BLENDED);
         ta.setTransparency(1.0f); // 1.0 = totalmente invisible
         invisibleApp.setTransparencyAttributes(ta);
-        cajaPersonaje = new Box(0.45f, 0.8f, 0.14f, paraTextura, invisibleApp);
+        cajaPersonaje = new Box(0.5f, 0.8f, 0.14f, paraTextura, invisibleApp);
         tgPanza.addChild(cajaPersonaje);
         //-------------------------DIAGRAMA--------------------------
         objRaiz.addChild(myMouseRotate);

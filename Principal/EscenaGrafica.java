@@ -64,7 +64,7 @@ public class EscenaGrafica {
     Colisiones Colisiones = new Colisiones();
     SerialPort puerto;
 
-    public EscenaGrafica() {
+    public EscenaGrafica(java.awt.Component canvas) {
         RepositorioObjetos3D.inicializar();
         //------- MUNDO--------
         Box bxMundo = new Box(-16.0f, 20.0f, 20.0f, paraTextura, textura.crearTexturas("cielo_1.jpg"));//c.setColor(38, 238, 240)
@@ -78,7 +78,7 @@ public class EscenaGrafica {
         tgPiso = new TransformGroup(t3dPiso);
         EscalarTG(tgPiso, 5.0f);
         //-----------PAREDES Y VENTANAS------------
-        crearParedCompleta(-0.2f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
+        crearParedCompleta(-0.2f, 3.0f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
         crearParedCompleta(-1.1f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
         crearVentana(0.0f, 0.05f, 1.0f, 0.1f, 0.1f, 0.05f, 0);
         crearPuerta(0.0f, 0.3f, -0.5f, 0.4f, 0.4f, 0.05f, 90);
@@ -96,6 +96,7 @@ public class EscenaGrafica {
         //----------ADD CHILD----------
         tgMundo.addChild(bxMundo);
         tgPiso.addChild(bxPiso);
+        listaBoxs.add(bxPiso);
         //objRaiz.addChild(tgPiso);
         objRaiz.addChild(myMouseRotate);
         objRaiz.addChild(tgMundo);
@@ -106,6 +107,8 @@ public class EscenaGrafica {
         configurarIluminacion(objRaiz);
         instanciador = new InstanciadorObjetos3D(tgMundo, listaTransform, listaBoxs);
         conectarPuerto();
+        registrarControlesPorTeclado(canvas);
+        
         //salonBuilder = new SalonDeClasesBuilder(this, instanciador);
 // Crear un salón en el centro
         // salonBuilder.construirSalon(0.0f,-10.0f);
@@ -162,34 +165,72 @@ agregarInstanciaConColision(RepositorioObjetos3D.mesa, 1.5f, 0f, 0f, 0.3f, 0.2f,
         tgMundo.addChild(tg);
     }
 
-    public void registrarControlesPorTeclado(java.awt.Component canvas) {
-        canvas.setFocusable(true);
-        canvas.requestFocus();
-        canvas.addKeyListener(new java.awt.event.KeyAdapter() {
-            @Override
-            public void keyPressed(java.awt.event.KeyEvent e) {
-                int keyCode = e.getKeyCode();
-                switch (keyCode) {
-                    case java.awt.event.KeyEvent.VK_W:
-                        MoverAdelante(tgMundo, steve.obtenerPanza(), 0.8);
-                        steve.caminar();
-                        break;
-                    case java.awt.event.KeyEvent.VK_S:
-                        MoverAtras(tgMundo, steve.obtenerPanza(), 0.8);
-                        steve.caminar();
-                        break;
-                    case java.awt.event.KeyEvent.VK_A:
-                        rotarTG(tgMundo, -5, "Y", posPersonaje);
-                        steve.caminar();
-                        break;
-                    case java.awt.event.KeyEvent.VK_D:
-                        rotarTG(tgMundo, 5, "Y", posPersonaje);
-                        steve.caminar();
-                        break;
-                }
+   /**
+ * Configura los controles de teclado incluyendo movimiento vertical libre
+ * @param canvas Componente donde se registrarán los eventos de teclado
+ */
+public void registrarControlesPorTeclado(java.awt.Component canvas) {
+    canvas.setFocusable(true);
+    canvas.requestFocus();
+    canvas.addKeyListener(new java.awt.event.KeyAdapter() {
+        @Override
+        public void keyPressed(java.awt.event.KeyEvent e) {
+            int keyCode = e.getKeyCode();
+            float velocidadVertical = 0.1f; // Ajusta esta velocidad según necesites
+            
+            switch (keyCode) {
+                // Movimiento horizontal y rotación
+                case java.awt.event.KeyEvent.VK_W:
+                    MoverAdelante(tgMundo, steve.obtenerPanza(), 0.8);
+                    steve.caminar();
+                    break;
+                case java.awt.event.KeyEvent.VK_S:
+                    MoverAtras(tgMundo, steve.obtenerPanza(), 0.8);
+                    steve.caminar();
+                    break;
+                case java.awt.event.KeyEvent.VK_A:
+                    rotarTG(tgMundo, -5, "Y", posPersonaje);
+                    steve.caminar();
+                    break;
+                case java.awt.event.KeyEvent.VK_D:
+                    rotarTG(tgMundo, 5, "Y", posPersonaje);
+                    steve.caminar();
+                    break;
+                    
+                // Movimiento vertical libre
+                case java.awt.event.KeyEvent.VK_UP:
+                    moverEnY(-velocidadVertical); // Subir
+                    break;
+                case java.awt.event.KeyEvent.VK_DOWN:
+                    moverEnY(velocidadVertical); // Bajar
+                    break;
+                    
+                // Tecla para alternar vuelo/modo escaleras (opcional)
+               
             }
-        });
-    }
+        }
+        
+    });
+}
+/**
+ * Mueve al personaje en el eje Y sin restricciones de colisión
+ * @param deltaY Cantidad de movimiento (positivo para bajar, negativo para subir)
+ */
+private void moverEnY(double deltaY) {
+    Transform3D t3d = new Transform3D();
+    tgMundo.getTransform(t3d);
+    
+    Vector3d posicionActual = new Vector3d();
+    t3d.get(posicionActual);
+    
+    // Aplicar movimiento directamente sin verificar colisiones
+    posicionActual.y += deltaY;
+    t3d.setTranslation(posicionActual);
+    tgMundo.setTransform(t3d);
+    
+    // Actualizar posición del personaje para otros cálculos
+    posPersonaje.y = posicionActual.y;
+}
 
     private boolean verificarColisionConTransformacion(Transform3D nuevaTransform) {
         // Guardar transformación actual del mundo
