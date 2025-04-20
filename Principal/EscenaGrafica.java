@@ -4,6 +4,7 @@
  */
 package Principal;
 
+//import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPort;
 import com.sun.j3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
@@ -62,6 +63,7 @@ public class EscenaGrafica {
     crearEscenaGrafica steve = new crearEscenaGrafica();
     Point3d posPersonaje = new Point3d(0, 0, 0);
     Colisiones Colisiones = new Colisiones();
+    Colisiones2 Colisiones2 = new Colisiones2();
     SerialPort puerto;
 
     public EscenaGrafica(java.awt.Component canvas) {
@@ -72,17 +74,17 @@ public class EscenaGrafica {
         t3dMundo.set(new Vector3d(0.0f, -0.15f, 0.0f));
         tgMundo = new TransformGroup(t3dMundo);
         //--------PISO-----------
-        Box bxPiso = new Box(2.0f, 0.05f, 2.0f, paraTextura, textura.crearTexturas("piso_1.jpg"));//c.setColor(38, 238, 240)
+        Box bxPiso = new Box(2.f, 0.05f, 2.0f, paraTextura, textura.crearTexturas("piso_1.jpg"));//c.setColor(38, 238, 240)
         Transform3D t3dPiso = new Transform3D();
         t3dPiso.set(new Vector3d(0.0f, -0.28f, 0.0f));
         tgPiso = new TransformGroup(t3dPiso);
         EscalarTG(tgPiso, 5.0f);
         //-----------PAREDES Y VENTANAS------------
-        crearParedCompleta(-0.2f, 3.0f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
-        crearParedCompleta(-1.1f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
-        crearVentana(0.0f, 0.05f, 1.0f, 0.1f, 0.1f, 0.05f, 0);
-        crearPuerta(0.0f, 0.3f, -0.5f, 0.4f, 0.4f, 0.05f, 90);
-        agregarArbol(0.0f, -0.08f, 0.0f);
+        // crearParedCompleta(-0.2f, 3.0f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
+        //crearParedCompleta(-1.1f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
+        //crearVentana(0.0f, 0.05f, 1.0f, 0.1f, 0.1f, 0.05f, 0);
+        //crearPuerta(0.0f, 0.3f, -0.5f, 0.4f, 0.4f, 0.05f, 90);
+        //agregarArbol(0.0f, -0.08f, 0.0f);
 
         //------------SALON 1-------
         tgMundo.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
@@ -108,15 +110,105 @@ public class EscenaGrafica {
         instanciador = new InstanciadorObjetos3D(tgMundo, listaTransform, listaBoxs);
         conectarPuerto();
         registrarControlesPorTeclado(canvas);
-        
-        //salonBuilder = new SalonDeClasesBuilder(this, instanciador);
-// Crear un salón en el centro
-        // salonBuilder.construirSalon(0.0f,-10.0f);
 //         //Mesa 60cm x 40cm x 60cm aprox (en metros: 0.3f, 0.2f, 0.3f)
-agregarInstanciaConColision(RepositorioObjetos3D.mesa, 1.5f, 0f, 0f, 0.3f, 0.2f, 0.3f);
-//
-//// Silla más chica
-//agregarInstanciaConColision(RepositorioObjetos3D.silla, -1.5f, 0f, 0f, 0.15f, 0.25f, 0.15f);
+        agregarInstanciaConColision(RepositorioObjetos3D.mesa, 1.5f, 0f, 0f, 0.3f, 0.2f, 0.3f);
+
+        EscaleraU escalera = new EscaleraU(this, Colisiones2);
+        escalera.construir(0.0f, 0.0f, -1.5f); // Cambia la posición a donde quieras colocarla
+        agregarCajitaTeletransporte(0.0f, -0.03f, -1.0f);
+        agregarCajitaTeletransporte(-0.6f, 0.2f, -3.0f);
+        //----------PISO 1-------------
+        //Salon Izquierda y entrada--------------
+        crearParedCompleta(1.0f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//0.38Y para estar sobre piso
+        crearParedCompleta(0.0f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//0.38Y para estar sobre piso
+        crearParedCompleta(-1.0f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//muto salon 1
+        crearParedCompleta(-1.4f, 0.18f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0);//pared enfrente 1
+        crearParedCompleta(-1.8f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//muro salon 2
+        crearParedCompleta(-2.2f, 0.18f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0);//pared enfrente 2
+        crearParedCompleta(-2.6f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//muro salon 3
+        crearParedCompleta(-3.0f, 0.18f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0);//pared enfrente 3
+        crearParedCompleta(-3.4f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//muro salon 4
+        crearParedCompleta(-3.65f, 0.18f, 6.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, 0);//pared enfrente 4
+        crearVentana(-1.55f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0);//Ventana se abre1
+        crearVentanaCerrada(-1.25f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0);//Ventana no se abre1
+        crearVentana(-2.35f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0);//Ventana se abre2
+        crearVentanaCerrada(-2.05f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0);//Ventana no se abre2
+        crearVentana(-3.15f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0);//Ventana se abre3
+        crearVentanaCerrada(-2.85f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0);//Ventana no se abre3
+        crearVentanaCerrada(-3.65f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0);//Ventana no se abre4
+        crearParedCompleta(-4.2f, 0.38f, 6.0f, 0.4f, 0.4f, 0.05f, 255, 167, 38, 0);//pared final
+        crearParedCompleta(-4.65f, 0.38f, 4.0f, 2.0f, 0.4f, 0.05f, 255, 167, 38, 90);//pared VerticalFinal
+        crearParedCompleta(-1.0f, 0.38f, 4.0f, 2.0f, 0.4f, 0.05f, 255, 167, 38, 90);//pared VerticalFinal
+        crearPuerta(-1.3f, 0.38f, 2.0f, 0.6f, 0.8f, 0.05f, 0);
+        crearParedCompleta(-1.7f, 0.38f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//0.38Y muro salon adentro 1
+        crearParedCompleta(-2.2f, 0.38f, 2.0f, 0.5f, 0.4f, 0.05f, 255, 167, 38, 0);//pared salon adentro 1
+        crearParedCompleta(-2.8f, 0.38f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//muro salon adentro 2
+        crearParedCompleta(-3.4f, 0.38f, 2.0f, 0.5f, 0.4f, 0.05f, 255, 167, 38, 0);//pared salon adentro 2
+        crearParedCompleta(-4.0f, 0.38f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//muro salon adentro 2
+        crearParedCompleta(-4.4f, 0.38f, 2.0f, 0.3f, 0.4f, 0.05f, 255, 167, 38, 0);//pared salon adentro 2
+        //------------ZonaEscaleras-------------
+        crearParedCompleta(2.3f, 0.38f, 6.0f, 1.2f, 0.4f, 0.1f, 255, 167, 38, 0);//0.38Y para estar sobre piso
+
+    }
+
+    public void agregarCajitaTeletransporte(float x, float y, float z) {
+        // 1. Crear la apariencia de la cajita
+        Appearance apariencia = new Appearance();
+        Material material = new Material();
+        material.setDiffuseColor(new Color3f(1.0f, 0.0f, 0.0f));
+        material.setEmissiveColor(new Color3f(0.3f, 0.0f, 0.0f));
+        apariencia.setMaterial(material);
+
+        // 2. Crear la caja de teletransporte
+        Box cajita = new Box(0.2f, 0.05f, 0.2f, apariencia);
+
+        // 3. Posicionar la cajita
+        Transform3D t3d = new Transform3D();
+        t3d.setTranslation(new Vector3f(x, y, z));
+        TransformGroup tg = new TransformGroup(t3d);
+        tg.addChild(cajita);
+
+        // 4. Comportamiento de teletransporte
+        Behavior comportamiento = new Behavior() {
+            private WakeupOnElapsedTime timer = new WakeupOnElapsedTime(100);
+            private boolean teletransportado = false;
+
+            public void initialize() {
+                wakeupOn(timer);
+            }
+
+            public void processStimulus(Enumeration criteria) {
+                // Usar el sistema de colisiones mejorado
+                if (Colisiones.hayColision(steve.obtenerPanza(), steve.cajaColisionPersonaje(), tg, cajita)) {
+                    if (!teletransportado) {
+                        Transform3D t3dMundo = new Transform3D();
+                        tgMundo.getTransform(t3dMundo);
+                        Vector3d posicion = new Vector3d();
+                        t3dMundo.get(posicion);
+
+                        posicion.y -= 1.0;
+                        posicion.z += 0.0;
+                        t3dMundo.setTranslation(posicion);
+                        tgMundo.setTransform(t3dMundo);
+
+                        posPersonaje.set(posicion);
+                        teletransportado = true;
+                        System.out.println("¡Teletransportado!");
+                    }
+                } else {
+                    teletransportado = false;
+                }
+                wakeupOn(timer);
+            }
+        };
+
+        comportamiento.setSchedulingBounds(new BoundingSphere(new Point3d(), 100.0));
+        tg.addChild(comportamiento);
+        tgMundo.addChild(tg);
+
+        // Registrar para detección de colisiones
+        listaTransform.add(tg);
+        listaBoxs.add(cajita);
     }
 
     public void agregarVentanaInteractiva(float x, float y, float z, float ancho, float alto, float profundo, float rotYGrados, boolean esInteractiva) {
@@ -165,72 +257,75 @@ agregarInstanciaConColision(RepositorioObjetos3D.mesa, 1.5f, 0f, 0f, 0.3f, 0.2f,
         tgMundo.addChild(tg);
     }
 
-   /**
- * Configura los controles de teclado incluyendo movimiento vertical libre
- * @param canvas Componente donde se registrarán los eventos de teclado
- */
-public void registrarControlesPorTeclado(java.awt.Component canvas) {
-    canvas.setFocusable(true);
-    canvas.requestFocus();
-    canvas.addKeyListener(new java.awt.event.KeyAdapter() {
-        @Override
-        public void keyPressed(java.awt.event.KeyEvent e) {
-            int keyCode = e.getKeyCode();
-            float velocidadVertical = 0.1f; // Ajusta esta velocidad según necesites
-            
-            switch (keyCode) {
-                // Movimiento horizontal y rotación
-                case java.awt.event.KeyEvent.VK_W:
-                    MoverAdelante(tgMundo, steve.obtenerPanza(), 0.8);
-                    steve.caminar();
-                    break;
-                case java.awt.event.KeyEvent.VK_S:
-                    MoverAtras(tgMundo, steve.obtenerPanza(), 0.8);
-                    steve.caminar();
-                    break;
-                case java.awt.event.KeyEvent.VK_A:
-                    rotarTG(tgMundo, -5, "Y", posPersonaje);
-                    steve.caminar();
-                    break;
-                case java.awt.event.KeyEvent.VK_D:
-                    rotarTG(tgMundo, 5, "Y", posPersonaje);
-                    steve.caminar();
-                    break;
-                    
-                // Movimiento vertical libre
-                case java.awt.event.KeyEvent.VK_UP:
-                    moverEnY(-velocidadVertical); // Subir
-                    break;
-                case java.awt.event.KeyEvent.VK_DOWN:
-                    moverEnY(velocidadVertical); // Bajar
-                    break;
-                    
-                // Tecla para alternar vuelo/modo escaleras (opcional)
-               
+    /**
+     * Configura los controles de teclado incluyendo movimiento vertical libre
+     *
+     * @param canvas Componente donde se registrarán los eventos de teclado
+     */
+    public void registrarControlesPorTeclado(java.awt.Component canvas) {
+        canvas.setFocusable(true);
+        canvas.requestFocus();
+        canvas.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                int keyCode = e.getKeyCode();
+                float velocidadVertical = 0.1f; // Ajusta esta velocidad según necesites
+
+                switch (keyCode) {
+                    // Movimiento horizontal y rotación
+                    case java.awt.event.KeyEvent.VK_W:
+                        MoverAdelante(tgMundo, steve.obtenerPanza(), 0.8);
+                        steve.caminar();
+                        break;
+                    case java.awt.event.KeyEvent.VK_S:
+                        MoverAtras(tgMundo, steve.obtenerPanza(), 0.8);
+                        steve.caminar();
+                        break;
+                    case java.awt.event.KeyEvent.VK_A:
+                        rotarTG(tgMundo, -5, "Y", posPersonaje);
+                        steve.caminar();
+                        break;
+                    case java.awt.event.KeyEvent.VK_D:
+                        rotarTG(tgMundo, 5, "Y", posPersonaje);
+                        steve.caminar();
+                        break;
+
+                    // Movimiento vertical libre
+                    case java.awt.event.KeyEvent.VK_UP:
+                        moverEnY(-velocidadVertical); // Subir
+                        break;
+                    case java.awt.event.KeyEvent.VK_DOWN:
+                        moverEnY(velocidadVertical); // Bajar
+                        break;
+
+                    // Tecla para alternar vuelo/modo escaleras (opcional)
+                }
             }
-        }
-        
-    });
-}
-/**
- * Mueve al personaje en el eje Y sin restricciones de colisión
- * @param deltaY Cantidad de movimiento (positivo para bajar, negativo para subir)
- */
-private void moverEnY(double deltaY) {
-    Transform3D t3d = new Transform3D();
-    tgMundo.getTransform(t3d);
-    
-    Vector3d posicionActual = new Vector3d();
-    t3d.get(posicionActual);
-    
-    // Aplicar movimiento directamente sin verificar colisiones
-    posicionActual.y += deltaY;
-    t3d.setTranslation(posicionActual);
-    tgMundo.setTransform(t3d);
-    
-    // Actualizar posición del personaje para otros cálculos
-    posPersonaje.y = posicionActual.y;
-}
+
+        });
+    }
+
+    /**
+     * Mueve al personaje en el eje Y sin restricciones de colisión
+     *
+     * @param deltaY Cantidad de movimiento (positivo para bajar, negativo para
+     * subir)
+     */
+    private void moverEnY(double deltaY) {
+        Transform3D t3d = new Transform3D();
+        tgMundo.getTransform(t3d);
+
+        Vector3d posicionActual = new Vector3d();
+        t3d.get(posicionActual);
+
+        // Aplicar movimiento directamente sin verificar colisiones
+        posicionActual.y += deltaY;
+        t3d.setTranslation(posicionActual);
+        tgMundo.setTransform(t3d);
+
+        // Actualizar posición del personaje para otros cálculos
+        posPersonaje.y = posicionActual.y;
+    }
 
     private boolean verificarColisionConTransformacion(Transform3D nuevaTransform) {
         // Guardar transformación actual del mundo
@@ -244,6 +339,17 @@ private void moverEnY(double deltaY) {
         boolean colisionDetectada = false;
         for (int i = 0; i < listaTransform.size(); i++) {
             if (Colisiones.hayColision(
+                    steve.obtenerPanza(),
+                    steve.cajaColisionPersonaje(),
+                    listaTransform.get(i),
+                    listaBoxs.get(i)
+            )) {
+                colisionDetectada = true;
+                break;
+            }
+        }
+        for (int i = 0; i < listaTransform.size(); i++) {
+            if (Colisiones2.hayColision(
                     steve.obtenerPanza(),
                     steve.cajaColisionPersonaje(),
                     listaTransform.get(i),
@@ -288,6 +394,7 @@ private void moverEnY(double deltaY) {
         tgMundo.addChild(tgPared);
         tgPared.addChild(bxPared);
     }
+
     public void crearVentana(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
         Ventana ventana = new Ventana(x, y, z, ancho, alto, profundidad, rotYGrados);
         tgMundo.addChild(ventana);
@@ -475,6 +582,13 @@ private void moverEnY(double deltaY) {
                 break;
             }
         }
+        for (int i = 0; i < listaTransform.size(); i++) {
+            if (Colisiones2.hayColision(steve.obtenerPanza(), steve.cajaColisionPersonaje(),
+                    listaTransform.get(i), listaBoxs.get(i))) {
+                colisionDetectada = true;
+                break;
+            }
+        }
 
         // Restaurar transformación
         tgMundo.setTransform(originalTransform);
@@ -578,6 +692,17 @@ private void moverEnY(double deltaY) {
         boolean colisionDetectada = false;
         for (int i = 0; i < listaTransform.size(); i++) {
             if (Colisiones.hayColision(
+                    steve.obtenerPanza(),
+                    steve.cajaColisionPersonaje(),
+                    listaTransform.get(i),
+                    listaBoxs.get(i)
+            )) {
+                colisionDetectada = true;
+                break;
+            }
+        }
+        for (int i = 0; i < listaTransform.size(); i++) {
+            if (Colisiones2.hayColision(
                     steve.obtenerPanza(),
                     steve.cajaColisionPersonaje(),
                     listaTransform.get(i),
