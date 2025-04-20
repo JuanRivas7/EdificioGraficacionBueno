@@ -5,7 +5,6 @@
 package Principal;
 
 //import com.fazecast.jSerialComm.SerialPort;
-import com.fazecast.jSerialComm.SerialPort;
 import com.sun.j3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.geometry.Box;
@@ -64,7 +63,7 @@ public class EscenaGrafica {
     Point3d posPersonaje = new Point3d(0, 0, 0);
     Colisiones Colisiones = new Colisiones();
     Colisiones2 Colisiones2 = new Colisiones2();
-    SerialPort puerto;
+    //SerialPort puerto;
 
     public EscenaGrafica(java.awt.Component canvas) {
         RepositorioObjetos3D.inicializar();
@@ -108,7 +107,7 @@ public class EscenaGrafica {
         objRaiz.addChild(steve.obtenerCuerpo());
         configurarIluminacion(objRaiz);
         instanciador = new InstanciadorObjetos3D(tgMundo, listaTransform, listaBoxs);
-        conectarPuerto();
+        //conectarPuerto();
         registrarControlesPorTeclado(canvas);
 //         //Mesa 60cm x 40cm x 60cm aprox (en metros: 0.3f, 0.2f, 0.3f)
         agregarInstanciaConColision(RepositorioObjetos3D.mesa, 1.5f, 0f, 0f, 0.3f, 0.2f, 0.3f);
@@ -146,8 +145,43 @@ public class EscenaGrafica {
         crearParedCompleta(-3.4f, 0.38f, 2.0f, 0.5f, 0.4f, 0.05f, 255, 167, 38, 0);//pared salon adentro 2
         crearParedCompleta(-4.0f, 0.38f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//muro salon adentro 2
         crearParedCompleta(-4.4f, 0.38f, 2.0f, 0.3f, 0.4f, 0.05f, 255, 167, 38, 0);//pared salon adentro 2
+
         //------------ZonaEscaleras-------------
         crearParedCompleta(2.3f, 0.38f, 6.0f, 1.2f, 0.4f, 0.1f, 255, 167, 38, 0);//0.38Y para estar sobre piso
+        
+        //-------------Salon derecha-----------
+
+        crearParedCompleta(3.6f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 1
+        crearParedCompleta(4.0f, 0.18f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 1
+        crearParedCompleta(4.4f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 2
+        crearParedCompleta(4.8f, 0.18f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 2
+        crearParedCompleta(5.2f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 3
+        crearParedCompleta(5.6f, 0.18f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 3
+        crearParedCompleta(6.0f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 4
+        crearParedCompleta(6.25f, 0.18f, 6.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 4
+
+        // Ventanas 
+        crearVentana(4.15f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre1
+        crearVentanaCerrada(3.85f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre1
+        crearVentana(4.95f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre2
+        crearVentanaCerrada(4.65f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre2
+        crearVentana(5.75f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre3
+        crearVentanaCerrada(5.45f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre3
+        crearVentanaCerrada(6.25f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre4
+
+        // Paredes 
+        crearParedCompleta(6.8f, 0.38f, 6.0f, 0.4f, 0.4f, 0.05f, 255, 167, 38, 0); //pared final
+        crearParedCompleta(7.25f, 0.38f, 4.0f, 2.0f, 0.4f, 0.05f, 255, 167, 38, 90); //pared VerticalFinal
+        crearParedCompleta(3.6f, 0.38f, 4.0f, 2.0f, 0.4f, 0.05f, 255, 167, 38, 90); //pared VerticalFinal (ajustada)
+
+        // Puerta y paredes internas 
+        crearPuerta(3.9f, 0.38f, 2.0f, 0.6f, 0.8f, 0.05f, 0);
+        crearParedCompleta(4.3f, 0.38f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 1
+        crearParedCompleta(4.8f, 0.38f, 2.0f, 0.5f, 0.4f, 0.05f, 255, 167, 38, 0); //pared salon adentro 1
+        crearParedCompleta(5.4f, 0.38f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 2
+        crearParedCompleta(6.0f, 0.38f, 2.0f, 0.5f, 0.4f, 0.05f, 255, 167, 38, 0); //pared salon adentro 2
+        crearParedCompleta(6.6f, 0.38f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 2
+        crearParedCompleta(7.0f, 0.38f, 2.0f, 0.3f, 0.4f, 0.05f, 255, 167, 38, 0); //pared salon adentro 2
 
     }
 
@@ -617,63 +651,63 @@ public class EscenaGrafica {
         }
     }
 
-    private void conectarPuerto() {
-        puerto = SerialPort.getCommPort("COM5");
-        puerto.setBaudRate(9600);
-        puerto.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-
-        if (puerto.openPort()) {
-            System.out.println("Puerto abierto");
-
-            Thread hilo;
-            hilo = new Thread(() -> {
-                try {
-                    InputStream entrada = puerto.getInputStream();
-                    StringBuilder mensaje = new StringBuilder();
-
-                    while (true) {
-                        int dato = entrada.read();
-                        if (dato == -1) {
-                            continue;
-                        }
-
-                        char caracter = (char) dato;
-                        if (caracter == '\n') {
-                            String linea = mensaje.toString().trim();
-                            mensaje.setLength(0); // Limpia el buffer
-                            System.out.println("Recibido: " + linea);
-                            if (linea.equals("Presionado  Boton")) {
-                                verificarVentanasCercanasYTogglear();
-                                verificarPuertasCercanasYTogglear();
-                            }
-                            if (linea.equals("Suelto  Arriba") || linea.equals("Presionado  Arriba")) {
-                                MoverAdelante(tgMundo, steve.obtenerPanza(), 0.8);
-                                steve.caminar();
-                            } else if (linea.equals("Suelto  Abajo") || linea.equals("Presionado  Abajo")) {
-                                MoverAtras(tgMundo, steve.obtenerPanza(), 0.8);
-                                steve.caminar();
-                            } else if (linea.equals("Suelto  Derecha") || linea.equals("Presionado  Derecha")) {
-                                rotarTG(tgMundo, 5, "Y", posPersonaje);
-                                steve.caminar();
-                            } else if (linea.equals("Suelto  Izquierda") || linea.equals("Presionado  Izquierda")) {
-                                rotarTG(tgMundo, -5, "Y", posPersonaje);
-                                steve.caminar();
-                            }
-                        } else {
-                            mensaje.append(caracter);
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-
-            hilo.start();
-
-        } else {
-            System.out.println("No se pudo abrir el puerto");
-        }
-    }
+//    private void conectarPuerto() {
+//        puerto = SerialPort.getCommPort("COM5");
+//        puerto.setBaudRate(9600);
+//        puerto.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+//
+//        if (puerto.openPort()) {
+//            System.out.println("Puerto abierto");
+//
+//            Thread hilo;
+//            hilo = new Thread(() -> {
+//                try {
+//                    InputStream entrada = puerto.getInputStream();
+//                    StringBuilder mensaje = new StringBuilder();
+//
+//                    while (true) {
+//                        int dato = entrada.read();
+//                        if (dato == -1) {
+//                            continue;
+//                        }
+//
+//                        char caracter = (char) dato;
+//                        if (caracter == '\n') {
+//                            String linea = mensaje.toString().trim();
+//                            mensaje.setLength(0); // Limpia el buffer
+//                            System.out.println("Recibido: " + linea);
+//                            if (linea.equals("Presionado  Boton")) {
+//                                verificarVentanasCercanasYTogglear();
+//                                verificarPuertasCercanasYTogglear();
+//                            }
+//                            if (linea.equals("Suelto  Arriba") || linea.equals("Presionado  Arriba")) {
+//                                MoverAdelante(tgMundo, steve.obtenerPanza(), 0.8);
+//                                steve.caminar();
+//                            } else if (linea.equals("Suelto  Abajo") || linea.equals("Presionado  Abajo")) {
+//                                MoverAtras(tgMundo, steve.obtenerPanza(), 0.8);
+//                                steve.caminar();
+//                            } else if (linea.equals("Suelto  Derecha") || linea.equals("Presionado  Derecha")) {
+//                                rotarTG(tgMundo, 5, "Y", posPersonaje);
+//                                steve.caminar();
+//                            } else if (linea.equals("Suelto  Izquierda") || linea.equals("Presionado  Izquierda")) {
+//                                rotarTG(tgMundo, -5, "Y", posPersonaje);
+//                                steve.caminar();
+//                            }
+//                        } else {
+//                            mensaje.append(caracter);
+//                        }
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            });
+//
+//            hilo.start();
+//
+//        } else {
+//            System.out.println("No se pudo abrir el puerto");
+//        }
+//    }
 
     private boolean verificarColisionConMovimiento(Vector3d direccion) {
         // 1. Guardar transformación actual
