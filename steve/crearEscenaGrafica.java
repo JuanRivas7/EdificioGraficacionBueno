@@ -187,7 +187,7 @@ public class crearEscenaGrafica {
         tgSpMusloIzq.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         tgSpPiernaDer.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         tgSpPiernaIzq.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-        EscalarTG(tgPanza, 0.01f);
+        EscalarTG(tgPanza, -0.01f);
 
         MouseRotate myMouseRotate = new MouseRotate(); //permite utilizar el comportamiento que tiene el Mouse
         myMouseRotate.setTransformGroup(tgPanza);

@@ -7,7 +7,7 @@ package Principal;
  
  public class Colisiones2 {
      
-     public static boolean hayColision(TransformGroup tg1, Box caja1, TransformGroup tg2, Box caja2) {
+     public boolean hayColision(TransformGroup tg1, Box caja1, TransformGroup tg2, Box caja2) {
          // Obtener transformaciones absolutas
          Transform3D t3d1 = obtenerTransformacionAbsoluta(tg1);
          Transform3D t3d2 = obtenerTransformacionAbsoluta(tg2);
@@ -49,7 +49,7 @@ package Principal;
          return colisionX && colisionY && colisionZ;
      }
      
-     private static double[] obtenerDimensionesReales(Box caja, Transform3D transform) {
+     private double[] obtenerDimensionesReales(Box caja, Transform3D transform) {
          Vector3d escala = new Vector3d();
          transform.getScale(escala);
          
@@ -60,7 +60,7 @@ package Principal;
          };
      }
      
-     private static Transform3D obtenerTransformacionAbsoluta(TransformGroup tg) {
+     private Transform3D obtenerTransformacionAbsoluta(TransformGroup tg) {
          Transform3D result = new Transform3D();
          if (tg == null) return result;
          

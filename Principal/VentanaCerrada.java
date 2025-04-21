@@ -7,10 +7,23 @@ import com.sun.j3d.utils.geometry.*;
 public class VentanaCerrada extends BranchGroup {
 
     public VentanaCerrada(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
-        // Posición base
+        // Convertimos grados a radianes porque Java 3D no habla "grados"
+        double rotYRad = Math.toRadians(rotYGrados);
+
+        // Transformación de rotación en Y
+        Transform3D rotacionY = new Transform3D();
+        rotacionY.rotY(rotYRad);
+
+        // Transformación de traslación
+        Transform3D traslacion = new Transform3D();
+        traslacion.setTranslation(new Vector3f(x, y, z));
+
+        // Combinamos rotación y traslación: primero rota, luego traslada
         Transform3D transform = new Transform3D();
-        transform.setTranslation(new Vector3f(x, y, z));
-        TransformGroup tgVentana = new TransformGroup(transform);
+        transform.mul(traslacion); // primero traslada
+        rotacionY.mul(transform);  // luego rota sobre la traslación
+
+        TransformGroup tgVentana = new TransformGroup(rotacionY);
 
         // Apariencia del marco
         Appearance marcoApp = new Appearance();
@@ -63,7 +76,7 @@ public class VentanaCerrada extends BranchGroup {
         tgVentana.addChild(tgMarcoIzq);
         tgVentana.addChild(tgMarcoDer);
         tgVentana.addChild(tgCristal);
-
+        
         this.addChild(tgVentana);
     }
 }

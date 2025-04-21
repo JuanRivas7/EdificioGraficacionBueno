@@ -146,8 +146,49 @@ public class EscenaGrafica {
         crearParedCompleta(-3.4f, 0.38f, 2.0f, 0.5f, 0.4f, 0.05f, 255, 167, 38, 0);//pared salon adentro 2
         crearParedCompleta(-4.0f, 0.38f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//muro salon adentro 2
         crearParedCompleta(-4.4f, 0.38f, 2.0f, 0.3f, 0.4f, 0.05f, 255, 167, 38, 0);//pared salon adentro 2
+
+        //------------CUBICULOS IZQUIERDA----------
+        crearParedCompleta(-4.65f, 0.18f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pared salon adentro 2
+        crearVentanaCerrada(-1.55f, 0.58f, -4.65f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
+        crearVentanaCerrada(-0.75f, 0.58f, -4.65f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
+        crearVentanaCerrada(0.05f, 0.58f, -4.65f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
+        crearParedCompleta(-3.5f, 0.38f, -0.45f, 1.2f, 0.4f, 0.05f, 255, 167, 38, 0);//pared salon adentro 2
+
         //------------ZonaEscaleras-------------
         crearParedCompleta(2.3f, 0.38f, 6.0f, 1.2f, 0.4f, 0.1f, 255, 167, 38, 0);//0.38Y para estar sobre piso
+
+        //-------------Salon derecha-----------
+        crearParedCompleta(3.6f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 1
+        crearParedCompleta(4.0f, 0.18f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 1
+        crearParedCompleta(4.4f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 2
+        crearParedCompleta(4.8f, 0.18f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 2
+        crearParedCompleta(5.2f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 3
+        crearParedCompleta(5.6f, 0.18f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 3
+        crearParedCompleta(6.0f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 4
+        crearParedCompleta(6.25f, 0.18f, 6.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 4
+
+        // Ventanas 
+        crearVentana(4.15f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre1
+        crearVentanaCerrada(3.85f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre1
+        crearVentana(4.95f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre2
+        crearVentanaCerrada(4.65f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre2
+        crearVentana(5.75f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre3
+        crearVentanaCerrada(5.45f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre3
+        crearVentanaCerrada(6.25f, 0.58f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre4
+
+        // Paredes 
+        crearParedCompleta(6.8f, 0.38f, 6.0f, 0.4f, 0.4f, 0.05f, 255, 167, 38, 0); //pared final
+        crearParedCompleta(7.25f, 0.38f, 4.0f, 2.0f, 0.4f, 0.05f, 255, 167, 38, 90); //pared VerticalFinal
+        crearParedCompleta(3.6f, 0.38f, 4.0f, 2.0f, 0.4f, 0.05f, 255, 167, 38, 90); //pared VerticalFinal (ajustada)
+
+        // Puerta y paredes internas 
+        crearPuerta(3.9f, 0.38f, 2.0f, 0.6f, 0.8f, 0.05f, 0);
+        crearParedCompleta(4.3f, 0.38f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 1
+        crearParedCompleta(4.8f, 0.38f, 2.0f, 0.5f, 0.4f, 0.05f, 255, 167, 38, 0); //pared salon adentro 1
+        crearParedCompleta(5.4f, 0.38f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 2
+        crearParedCompleta(6.0f, 0.38f, 2.0f, 0.5f, 0.4f, 0.05f, 255, 167, 38, 0); //pared salon adentro 2
+        crearParedCompleta(6.6f, 0.38f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 2
+        crearParedCompleta(7.0f, 0.38f, 2.0f, 0.3f, 0.4f, 0.05f, 255, 167, 38, 0); //pared salon adentro 2
 
     }
 
