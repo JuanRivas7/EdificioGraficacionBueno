@@ -10,7 +10,7 @@ public class Puerta extends BranchGroup {
     private boolean abierta = false;
     private Vector3f posicion;
     private float anguloApertura = 90f;
-    
+
     public Puerta(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
         this.posicion = new Vector3f(x, y, z);
 
@@ -42,8 +42,8 @@ public class Puerta extends BranchGroup {
         tgBase.addChild(crearMarco(new Vector3f(ancho / 2 - marcoAncho / 2, 0, 0), marcoAncho / 2, alto / 2, zMarco, marcoApp)); // derecho
 
         // Hoja de la puerta (gira sobre el borde izquierdo)
-         Box hojaPuerta = new Box((ancho - marcoAncho * 2) / 2, (alto - marcoAncho * 2) / 2,
-                 profundidad / 2 - 0.01f, puertaApp);
+        Box hojaPuerta = new Box((ancho - marcoAncho * 2) / 2, (alto - marcoAncho * 2) / 2,
+                profundidad / 2 - 0.01f, puertaApp);
         // Transformación para colocar la hoja en su sitio (relativo al eje de giro)
         tgPuertaHoja = new TransformGroup();
         tgPuertaHoja.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);

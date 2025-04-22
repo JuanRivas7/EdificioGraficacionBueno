@@ -1,6 +1,5 @@
 package Principal;
 
-
 import com.sun.j3d.utils.universe.SimpleUniverse;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
