@@ -129,7 +129,7 @@ public class EscenaGrafica {
         tgMundo.addChild(banda);
         //----------PISO 1-------------
         //Salon Izquierda y entrada--------------
-        //crearPisoSalon(1.0f, 0.38f, 6.0f, 0.3f, 0.02f, 0.3f);
+        crearPisoSalon(0.0f, -0.02f, 4.06f, 1.0f, 0.002f, 2.05f);//Piso Entrada Principal
         crearParedCompleta(1.0f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//0.38Y para estar sobre piso
         crearParedCompleta(0.0f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//0.38Y para estar sobre piso
         crearParedCompleta(-1.0f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//muto salon 1
@@ -177,7 +177,9 @@ public class EscenaGrafica {
         crearVentanaCerrada(-2.79f, 0.58f, 0.9f, 0.98f, 0.4f, 0.05f, 0);//Ventana Principio
         crearVentanaCerrada(-1.4f, 0.58f, -3.3f, 1.0f, 0.4f, 0.05f, 90);//Ventana Horizontal Fondo
         crearVentanaCerrada(-1.4f, 0.58f, -1.6f, 1.0f, 0.4f, 0.05f, 90);//Ventana Horizontal Fondo
-        crearPisoSalon(-2.8f, 0.0f, 4.0f, 1.8f, 0.008f, 2.0f);//Piso salon Piso1 Izquierda
+        crearPisoSalon(-2.8f, -0.02f, 4.0f, 1.8f, 0.002f, 2.0f);//Piso salon Piso1 Izquierda
+        crearPisoSalon(-3.1f, -0.02f, 0.8f, 1.5f, 0.002f, 1.2f);//Piso Fondo
+        crearPisoSalon(-0.1f, -0.02f, 0.8f, 1.5f, 0.002f, 1.2f);//Piso Mas cerca entrada Salon
 
 //=======
         //------------ZonaEscaleras-------------
@@ -187,7 +189,7 @@ public class EscenaGrafica {
         crearParedCompleta(1.0f, 0.38f, 2.0f, 0.1f, 0.4f, 0.05f, 255, 253, 208, 0);//muro2 Pasillo Entrada
         crearParedCompleta(3.08f, 0.38f, 2.0f, 0.48f, 0.4f, 0.05f, 255, 167, 38, 0);//Falta Ajustar
         EscaleraU escalera = new EscaleraU(this, Colisiones2);
-        escalera.construir( 1.7f,0.0f,2.0f,1.2f,0.8f,1.6f,     180);
+        escalera.construir(1.7f, 0.0f, 2.0f, 1.2f, 0.8f, 1.6f, 180);
         // agregarCajitaTeletransporte(0.0f, -0.03f, -1.0f);//Falta Posicionar
         //agregarCajitaTeletransporte(-0.6f, 0.2f, -3.0f);//Falta Posicionar
         //-------------Salon derecha-----------
@@ -255,7 +257,7 @@ public class EscenaGrafica {
         crearParedCompleta(6.0f, 0.38f, 2.0f, 0.5f, 0.4f, 0.05f, 255, 167, 38, 0); //pared salon adentro 2
         crearParedCompleta(6.6f, 0.38f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 2
         crearParedCompleta(7.0f, 0.38f, 2.0f, 0.3f, 0.4f, 0.05f, 255, 167, 38, 0); //pared salon adentro 2
-        crearPisoSalon(5.4f, 0.0f, 4.0f, 1.8f, 0.008f, 2.0f);//Piso Salon Derecha
+        crearPisoSalon(5.4f, -0.02f, 4.0f, 1.8f, 0.002f, 2.0f);//Piso Salon Derecha
 
         //------------CUBICULOS DERECHA----------
         crearParedCompleta(7.25f, 0.18f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pared Externa 1
@@ -273,7 +275,8 @@ public class EscenaGrafica {
         crearVentanaCerrada(5.35f, 0.58f, 1.0f, 0.78f, 0.4f, 0.05f, 0);//Ventana Principio
         crearVentanaCerrada(-1.5f, 0.58f, 5.75f, 1.0f, 0.4f, 0.05f, 90);//Ventana Horizontal Fondo
         crearVentanaCerrada(-1.5f, 0.58f, 4.25f, 1.0f, 0.4f, 0.05f, 90);//Ventana Horizontal Cerca entrada
-
+        crearPisoSalon(5.75f, -0.02f, 0.75f, 1.5f, 0.002f, 1.2f);//Piso Hasta el fondo
+        crearPisoSalon(2.75f, -0.02f, 0.75f, 1.5f, 0.002f, 1.2f);//Piso mas cerca entrada salon
     }
 
     public void agregarCajitaTeletransporte(float x, float y, float z) {
