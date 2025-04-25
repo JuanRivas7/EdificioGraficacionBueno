@@ -31,13 +31,17 @@ import javax.vecmath.Vector3f;
 import steve.crearEscenaGrafica;
 import java.util.ArrayList;
 import javax.media.j3d.Appearance;
+import javax.media.j3d.ColoringAttributes;
+import javax.media.j3d.GeometryArray;
 import javax.media.j3d.Link;
 import javax.media.j3d.Material;
 import javax.media.j3d.Node;
+import javax.media.j3d.PolygonAttributes;
 import javax.media.j3d.QuadArray;
 import javax.media.j3d.Shape3D;
 import javax.media.j3d.SharedGroup;
 import javax.media.j3d.TransparencyAttributes;
+import javax.media.j3d.TriangleArray;
 import javax.vecmath.Point3f;
 import javax.vecmath.TexCoord2f;
 
@@ -54,6 +58,7 @@ public class EscenaGrafica {
     ArrayList<Box> listaBoxs = new ArrayList<>();
     ArrayList<Ventana> listaVentanas = new ArrayList<>();
     ArrayList<Puerta> listaPuerta = new ArrayList<>();
+    ArrayList<PuertasDobles> listaPuertaD = new ArrayList<>();
     BranchGroup objRaiz = new BranchGroup();
     static Textura textura = new Textura();
     int paraTextura = Primitive.GENERATE_NORMALS + Primitive.GENERATE_TEXTURE_COORDS;
@@ -79,18 +84,10 @@ public class EscenaGrafica {
         t3dPiso.set(new Vector3d(0.0f, -0.28f, 0.0f));
         tgPiso = new TransformGroup(t3dPiso);
         EscalarTG(tgPiso, 5.0f);
-        //-----------PAREDES Y VENTANAS------------
-        // crearParedCompleta(-0.2f, 3.0f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
-        //crearParedCompleta(-1.1f, -0.1f, -1.0f, 0.4f, 0.4f, 0.1f, 255, 167, 38, -10);
-        //crearVentana(0.0f, 0.05f, 1.0f, 0.1f, 0.1f, 0.05f, 0);
-        //crearPuerta(0.0f, 0.3f, -0.5f, 0.4f, 0.4f, 0.05f, 90);
-        //agregarArbol(0.0f, -0.08f, 0.0f);
-
         //------------SALON 1-------
         tgMundo.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         tgPiso.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         //||--------------MOVER EL MOUSE----------||
-        //EscalarTG(tgMundo, 5.0f);
         MouseRotate myMouseRotate = new MouseRotate();
         myMouseRotate.setTransformGroup(tgMundo);
         myMouseRotate.setSchedulingBounds(new BoundingSphere());
@@ -102,7 +99,7 @@ public class EscenaGrafica {
         //objRaiz.addChild(tgPiso);
         objRaiz.addChild(myMouseRotate);
         objRaiz.addChild(tgMundo);
-        steve.Posicion(0, 0.1f, 1);
+        steve.Posicion(0, 0.1f, 1f);
         tgMundo.addChild(tgPiso);
         steve.girarTG(steve.obtenerPanza(), 180, "Y");
         objRaiz.addChild(steve.obtenerCuerpo());
@@ -113,22 +110,31 @@ public class EscenaGrafica {
 //         //Mesa 60cm x 40cm x 60cm aprox (en metros: 0.3f, 0.2f, 0.3f)
         //agregarInstanciaConColision(RepositorioObjetos3D.mesa, 1.5f, 0f, 0f, 0.3f, 0.2f, 0.3f);
 
-        BandaTransportadora banda = new BandaTransportadora(3, 0.2f, -4, 4, 0.3f, 0.5f);
+        BandaTransportadora banda = new BandaTransportadora(3, 0.2f, -4, 4, 0.28f, 0.45f);
 
         // Crear y agregar un cilindro
         TransformGroup cilindro = banda.crearCilindroPresion(
                 -0.3f, // posX
-                0.4f, // posY
+                0.3f, // posY
                 -3.0f, // posZ
                 0.5f, // radio
-                0.6f // altura
+                0.55f // altura
         );
 
         // Agregar a tu escena
         tgMundo.addChild(cilindro);
         tgMundo.addChild(banda);
-        //----------PISO 1-------------
+        //----------PISO 1-----------
         //Salon Izquierda y entrada--------------
+        //Entrada Principal
+        crearPuertaDoble(0.5f, 0.38f, 6.0f, 0.8f, 0.8f, 0.05f, 0);//Puerta Entrada PDerecha
+        crearPuertaDoble(-0.5f, 0.38f, 6.0f, 0.8f, 0.8f, 0.05f, 0);//Puerta Entrada PIzq
+        //Entrada ALimentarias
+        crearPuertaDoble(0.5f, 0.38f, -0.4f, 0.8f, 0.8f, 0.05f, 0);//Puerta Entrada Alimentarias
+        crearVentanaCerrada(-0.1f, 0.18f, -0.4f, 0.4f, 0.4f, 0.05f, 0);//Ventana chica Abajp Izq
+        crearVentanaCerrada(-0.1f, 0.58f, -0.4f, 0.4f, 0.4f, 0.05f, 0);//Ventana Chica Arriba Izq
+        crearVentanaCerrada(1.15f, 0.18f, -0.4f, 0.5f, 0.4f, 0.05f, 0);//Ventana chica Abajp Der
+        crearVentanaCerrada(1.15f, 0.58f, -0.4f, 0.5f, 0.4f, 0.05f, 0);//Ventana Chica Arriba Der
         crearPisoSalon(0.0f, -0.02f, 4.06f, 1.0f, 0.002f, 2.05f);//Piso Entrada Principal
         crearParedCompleta(1.0f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//0.38Y para estar sobre piso
         crearParedCompleta(0.0f, 0.38f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//0.38Y para estar sobre piso
@@ -513,31 +519,21 @@ public class EscenaGrafica {
         crearParedCompleta(-0.3f, 1.98f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0);//1.98Y muro salon adentro 1
         crearParedCompleta(-0.71f, 1.78f, 2.0f, 0.4f, 0.2f, 0.05f, 255, 167, 38, 0);//pared salon adentro 2
 
-//------------CUBICULOS IZQUIERDA----------
-//crearParedCompleta(-4.65f, 1.78f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pared salon adentro 2
-//crearVentanaCerrada(-1.55f, 2.18f, -4.65f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
-//crearVentanaCerrada(-0.75f, 2.18f, -4.65f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
-//crearVentanaCerrada(0.05f, 2.18f, -4.65f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
-//Viendo Laboratorio Alimentarias Izquierda
-//crearParedCompleta(-2.6f, 1.7f, -0.45f, 2.1f, 0.15f, 0.05f, 255, 167, 38, 0);//pared salon adentro 2
-//crearParedCompleta(-2.6f, 2.28f, -0.45f, 2.1f, 0.1f, 0.05f, 255, 167, 38, 0);//pared Externa ArribaCentro Viendo Alimentarias
-//crearParedCompleta(-4.3f, 2.02f, -0.45f, 0.4f, 0.17f, 0.05f, 255, 167, 38, 0);//Minipared Pegada al exterior Lado Derecho
-//crearVentanaCerrada(-3.4f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha1
-//crearVentanaCerrada(-2.4f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha2
-//crearVentanaCerrada(-1.4f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha3
-//crearVentanaCerrada(-0.7f, 2.02f, -0.45f, 0.4f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha4
-//crearParedCompleta(1.5f, 1.98f, -0.45f, 0.1f, 0.4f, 0.05f, 255, 253, 208, 0);//Muro Blanco Viendo Centro Laboratorio Alimentarias1
-//crearParedCompleta(-0.4f, 1.98f, -0.45f, 0.1f, 0.4f, 0.05f, 255, 253, 208, 0);//Muro Blanco Viendo Laboratorio Alimentarias2
-//crearParedCubiculo(-3.3f, 1.78f, 1.4f, 1.0f, 0.4f, 0.05f, 90);//pared Division cubiculo1
-//crearParedCubiculo(-1.6f, 1.78f, 1.4f, 1.0f, 0.4f, 0.05f, 90);//pared Division cubiculo2
-//crearPuerta(-3.65f, 1.98f, 0.9f, 0.7f, 0.8f, 0.05f, 0);//Puerta Hazta el final 1
-//crearPuerta(-1.95f, 1.98f, 0.9f, 0.7f, 0.8f, 0.05f, 0);//Puerta mas Cerca entrada2
-//crearParedCubiculo(-4.3f, 1.78f, 0.9f, 0.6f, 0.4f, 0.05f, 0);//pared A un lado Puerta1
-//crearParedCubiculo(-2.79f, 1.78f, 0.9f, 0.98f, 0.4f, 0.05f, 0);//pared A un lado Puerta2
-//crearVentanaCerrada(-4.3f, 2.18f, 0.9f, 0.6f, 0.4f, 0.05f, 0);//Ventana Fondo
-//crearVentanaCerrada(-2.79f, 2.18f, 0.9f, 0.98f, 0.4f, 0.05f, 0);//Ventana Principio
-//crearVentanaCerrada(-1.4f, 2.18f, -3.3f, 1.0f, 0.4f, 0.05f, 90);//Ventana Horizontal Fondo
-//crearVentanaCerrada(-1.4f, 2.18f, -1.6f, 1.0f, 0.4f, 0.05f, 90);//Ventana Horizontal Fondo
+//------------CUBICULO IZQUIERDA----------
+        crearVentanaCerrada(-1.50f, 2.18f, -3.55f, 0.80f, 0.4f, 0.05f, 90);//Ventana no se abre1
+        crearVentanaCerrada(-0.70f, 2.18f, -3.55f, 0.80f, 0.4f, 0.05f, 90);//Ventana no se abre1
+        crearParedCubiculo(-3.55f, 1.78f, 1.1f, 1.6f, 0.4f, 0.05f, 90);//pared Division cubiculo1
+        crearPuerta(-3.55f, 1.98f, -0.05f, 0.7f, 0.8f, 0.05f, 90);//Puerta Hazta el final 1
+
+        //------------CUBICULO DERECHA -------------------
+        crearVentanaCerrada(-1.50f, 2.18f, 5.4f, 0.80f, 0.4f, 0.05f, 90);//Ventana no se abre1
+        crearVentanaCerrada(-0.70f, 2.18f, 5.4f, 0.80f, 0.4f, 0.05f, 90);//Ventana no se abre1
+        crearParedCubiculo(5.4f, 1.78f, 1.1f, 1.6f, 0.4f, 0.05f, 90);//pared Division cubiculo1
+        crearPuerta(5.4f, 1.98f, -0.05f, 0.7f, 0.8f, 0.05f, 90);//Puerta Hazta el final 1
+
+        //-------------TECHO----------------------
+        crearParedCompleta(1.3f, 2.4f, 2.8f, 6f, 0.02f, 3.3f, 255, 167, 38, 0);//pared salon adentro 2
+
         crearPisoSalon(-2.8f, 1.58f, 4.0f, 1.8f, 0.002f, 2.0f);//Piso salon Piso3 Izquierda
         crearPisoSalon(-3.1f, 1.58f, 0.8f, 1.5f, 0.002f, 1.2f);//Piso Fondo
         crearPisoSalon(-0.1f, 1.58f, 0.8f, 1.5f, 0.002f, 1.2f);//Piso Mas cerca entrada Salon
@@ -549,119 +545,97 @@ public class EscenaGrafica {
         crearParedCompleta(1.0f, 1.98f, 2.0f, 0.1f, 0.4f, 0.05f, 255, 253, 208, 0);//muro2 Pasillo Entrada
         crearParedCompleta(3.08f, 1.98f, 2.0f, 0.48f, 0.4f, 0.05f, 255, 167, 38, 0);//Falta Ajustar
 
- //agregarCajitaTeletransporte(2.0f, 1.6f, 1.9f);//Falta Posicionar
- agregarCajitaTeletransporte(1.4f, 0.8f, 1.5f);//Falta Posicionar
+        //agregarCajitaTeletransporte(2.0f, 1.6f, 1.9f);//Falta Posicionar
+        agregarCajitaTeletransporte(1.4f, 0.8f, 1.5f);//Falta Posicionar
 //-------------Salon derecha-----------
-crearParedCompleta(5.4f, 1.78f, 6.0f, 1.89f, 0.2f, 0.05f, 255, 167, 38, 0); //pared Balcon1
+        crearParedCompleta(5.4f, 1.78f, 6.0f, 1.89f, 0.2f, 0.05f, 255, 167, 38, 0); //pared Balcon1
 
-crearParedCompleta(3.6f, 1.98f, 5.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 1
-crearParedCompleta(4.0f, 1.78f, 5.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 2
+        crearParedCompleta(3.6f, 1.98f, 5.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 1
+        crearParedCompleta(4.0f, 1.78f, 5.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 2
 
-crearParedCompleta(4.4f, 1.98f, 5.0f, 0.1f, 0.4f, 0.05f, 255, 253, 208, 0);//muro2 Salon Izquierda
-crearParedCompleta(4.8f, 1.78f, 5.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 2
-crearParedCompleta(5.2f, 1.98f, 5.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 3
-crearParedCompleta(5.6f, 1.78f, 5.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 3
-crearParedCompleta(6.0f, 1.98f, 5.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 4
-crearParedCompleta(6.2f, 1.78f, 5.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 4
-crearPuerta(6.8f, 1.98f, 5.0f, 0.6f, 0.8f, 0.05f,0);
-crearParedCompleta(7.2f, 1.78f, 5.0f, 0.1f, 0.6f, 0.05f, 255, 167, 38, 0); //pared enfrente 4
-
+        crearParedCompleta(4.4f, 1.98f, 5.0f, 0.1f, 0.4f, 0.05f, 255, 253, 208, 0);//muro2 Salon Izquierda
+        crearParedCompleta(4.8f, 1.78f, 5.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 2
+        crearParedCompleta(5.2f, 1.98f, 5.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 3
+        crearParedCompleta(5.6f, 1.78f, 5.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 3
+        crearParedCompleta(6.0f, 1.98f, 5.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 4
+        crearParedCompleta(6.2f, 1.78f, 5.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 4
+        crearPuerta(6.8f, 1.98f, 5.0f, 0.6f, 0.8f, 0.05f, 0);
+        crearParedCompleta(7.2f, 1.78f, 5.0f, 0.1f, 0.6f, 0.05f, 255, 167, 38, 0); //pared enfrente 4
 
 //// Ventanas 
-crearVentana(4.15f, 2.18f, 5.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre2
-crearVentanaCerrada(3.85f, 2.18f, 5.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre2
-crearVentana(4.95f, 2.18f, 5.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre2
-crearVentanaCerrada(4.65f, 2.18f, 5.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre2
-crearVentana(5.75f, 2.18f, 5.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre3
-crearVentanaCerrada(5.45f, 2.18f, 5.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre3
-crearVentanaCerrada(6.3f, 2.18f, 5.0f, 0.4f, 0.4f, 0.05f, 0); //Ventana no se abre4
+        crearVentana(4.15f, 2.18f, 5.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre1
+        crearVentanaCerrada(3.85f, 2.18f, 5.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre1
+        crearVentana(4.95f, 2.18f, 5.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre2
+        crearVentanaCerrada(4.65f, 2.18f, 5.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre2
+        crearVentana(5.75f, 2.18f, 5.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre3
+        crearVentanaCerrada(5.45f, 2.18f, 5.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre3
+        crearVentanaCerrada(6.3f, 2.18f, 5.0f, 0.4f, 0.4f, 0.05f, 0); //Ventana no se abre4
 //
 //// Paredes 
 //crearParedCompleta(6.8f, 1.98f, 5.0f, 0.4f, 0.4f, 0.05f, 255, 167, 38, 0); //pared final
-crearParedCompleta(7.25f, 1.98f, 4.0f, 2.05f, 0.4f, 0.05f, 255, 167, 38, 90); //pared VerticalFinal
+        crearParedCompleta(7.25f, 1.98f, 4.0f, 2.05f, 0.4f, 0.05f, 255, 167, 38, 90); //pared VerticalFinal
 //crearParedCompleta(3.6f, 1.98f, 4.0f, 2.1f, 0.4f, 0.05f, 255, 167, 38, 90); //pared VerticalFinal (ajustada)
 //
 //// Puerta y paredes internas 
-crearPuerta(3.9f, 1.98f, 2.0f, 0.6f, 0.8f, 0.05f, 0);
-crearParedCompleta(4.3f, 1.98f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 1
-crearParedCompleta(4.8f, 1.78f, 2.0f, 0.5f, 0.2f, 0.05f, 255, 167, 38, 0); //pared salon adentro 1
-crearVentanaCerrada(4.63f, 2.18f, 2.0f, 0.45f, 0.4f, 0.05f,0);//Ventana1 encima Muro1
-crearVentana(5.08f, 2.18f, 2.0f, 0.45f, 0.4f, 0.05f,0);//Ventana2 encima Muro1 
-crearParedCompleta(5.4f, 1.98f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 2
-crearParedCompleta(6.0f, 1.78f, 2.0f, 0.5f, 0.2f, 0.05f, 255, 167, 38, 0); //pared salon adentro 2
-crearVentanaCerrada(5.73f, 2.18f, 2.0f, 0.45f, 0.4f, 0.05f,0);//Ventana1 encima Muro2
-crearVentana(6.23f, 2.18f, 2.0f, 0.55f, 0.4f, 0.05f,0);//Ventana2 encima Muro2 
-crearParedCompleta(6.6f, 1.98f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 2
-crearParedCompleta(7.0f, 1.78f, 2.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared salon adentro 2
-crearVentanaCerrada(6.96f, 2.18f, 2.0f, 0.51f, 0.4f, 0.05f,0);//Ventana1 encima Pared 2
+        crearPuerta(3.9f, 1.98f, 2.0f, 0.6f, 0.8f, 0.05f, 0);
+        crearParedCompleta(4.3f, 1.98f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 1
+        crearParedCompleta(4.8f, 1.78f, 2.0f, 0.5f, 0.2f, 0.05f, 255, 167, 38, 0); //pared salon adentro 1
+        crearVentanaCerrada(4.63f, 2.18f, 2.0f, 0.45f, 0.4f, 0.05f, 0);//Ventana1 encima Muro1
+        crearVentana(5.08f, 2.18f, 2.0f, 0.45f, 0.4f, 0.05f, 0);//Ventana2 encima Muro1 
+        crearParedCompleta(5.4f, 1.98f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 2
+        crearParedCompleta(6.0f, 1.78f, 2.0f, 0.5f, 0.2f, 0.05f, 255, 167, 38, 0); //pared salon adentro 2
+        crearVentanaCerrada(5.73f, 2.18f, 2.0f, 0.45f, 0.4f, 0.05f, 0);//Ventana1 encima Muro2
+        crearVentana(6.23f, 2.18f, 2.0f, 0.55f, 0.4f, 0.05f, 0);//Ventana2 encima Muro2 
+        crearParedCompleta(6.6f, 1.98f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 2
+        crearParedCompleta(7.0f, 1.78f, 2.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared salon adentro 2
+        crearVentanaCerrada(6.96f, 2.18f, 2.0f, 0.51f, 0.4f, 0.05f, 0);//Ventana1 encima Pared 2
 
-////-------------Salon derecha-----------
-//crearParedCompleta(3.6f, 1.98f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 1
-//crearParedCompleta(4.0f, 1.78f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 1
-//crearParedCompleta(4.4f, 1.98f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 2
-//crearParedCompleta(4.8f, 1.78f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 2
-//crearParedCompleta(5.2f, 1.98f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 3
-//crearParedCompleta(5.6f, 1.78f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 3
-//crearParedCompleta(6.0f, 1.98f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 4
-//crearParedCompleta(6.25f, 1.78f, 6.0f, 0.15f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 4
-//
-//// Ventanas 
-//crearVentana(4.15f, 2.18f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre1
-//crearVentanaCerrada(3.85f, 2.18f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre1
-//crearVentana(4.95f, 2.18f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre2
-//crearVentanaCerrada(4.65f, 2.18f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre2
-//crearVentana(5.75f, 2.18f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana se abre3
-//crearVentanaCerrada(5.45f, 2.18f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre3
-//crearVentanaCerrada(6.25f, 2.18f, 6.0f, 0.3f, 0.4f, 0.05f, 0); //Ventana no se abre4
-//
-//// Paredes 
-//crearParedCompleta(6.8f, 1.98f, 6.0f, 0.4f, 0.4f, 0.05f, 255, 167, 38, 0); //pared final
-crearParedCompleta(7.25f, 1.98f, 4.0f, 2.0f, 0.4f, 0.05f, 255, 167, 38, 90); //pared VerticalFinal
-crearParedCompleta(3.6f, 1.98f, 4.0f, 2.0f, 0.4f, 0.05f, 255, 167, 38, 90); //pared VerticalFinal (ajustada)
-//
-//// Puerta y paredes internas 
-//crearPuerta(3.9f, 1.98f, 2.0f, 0.6f, 0.8f, 0.05f, 0);
-//crearParedCompleta(4.3f, 1.98f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 1
-//crearParedCompleta(4.8f, 1.98f, 2.0f, 0.5f, 0.4f, 0.05f, 255, 167, 38, 0); //pared salon adentro 1
-//crearParedCompleta(5.4f, 1.98f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 2
-//crearParedCompleta(6.0f, 1.98f, 2.0f, 0.5f, 0.4f, 0.05f, 255, 167, 38, 0); //pared salon adentro 2
-//crearParedCompleta(6.6f, 1.98f, 2.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon adentro 2
-//crearParedCompleta(7.0f, 1.98f, 2.0f, 0.3f, 0.4f, 0.05f, 255, 167, 38, 0); //pared salon adentro 2
-  crearPisoSalon(5.4f, 1.58f, 4.0f, 1.8f, 0.002f, 2.0f);//Piso Salon Derecha
+        crearParedCompleta(7.25f, 1.98f, 4.0f, 2.0f, 0.4f, 0.05f, 255, 167, 38, 90); //pared VerticalFinal
+        crearParedCompleta(3.6f, 1.98f, 4.0f, 2.0f, 0.4f, 0.05f, 255, 167, 38, 90); //pared VerticalFinal (ajustada)
+        crearPisoSalon(5.4f, 1.58f, 4.0f, 1.8f, 0.002f, 2.0f);//Piso Salon Derecha
 
 //------------CUBICULOS DERECHA----------
-crearParedCompleta(7.25f, 1.78f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pared Externa 1
- crearVentanaCerrada(-1.55f, 2.18f, 7.25f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
- crearVentanaCerrada(-0.75f, 2.18f, 7.25f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
- crearVentanaCerrada(0.05f, 2.18f, 7.25f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
+        crearParedCompleta(7.25f, 1.78f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pared Externa 1
+        crearVentanaCerrada(-1.55f, 2.18f, 7.25f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
+        crearVentanaCerrada(-0.75f, 2.18f, 7.25f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
+        crearVentanaCerrada(0.05f, 2.18f, 7.25f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
 //Vista Laboratorio Alimentarias
 
- crearParedCompleta(1.3f, 1.7f, -0.45f, 6.0f, 0.15f, 0.05f, 255, 167, 38, 0);//pared Externa Viendo Alimentarias
- crearParedCompleta(6.9f, 2.02f, -0.45f, 0.4f, 0.17f, 0.05f, 255, 167, 38, 0);//Minipared Pegada al exterior Lado Derecho
- crearVentanaCerrada(2.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha1
- crearVentanaCerrada(3.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha2
- crearVentanaCerrada(4.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha3
- crearVentanaCerrada(5.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha4
- crearVentanaCerrada(6.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha5
- crearVentanaCerrada(1.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha6
- crearVentanaCerrada(0.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha7
- crearVentanaCerrada(-1.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha8
- crearVentanaCerrada(-2.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha9
- crearVentanaCerrada(-3.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha10
- crearVentanaCerrada(-4.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha11
- crearParedCompleta(-4.61f, 2.02f, -0.45f, 0.085f, 0.2f, 0.05f, 255, 167, 38, 0);//pared Externa Viendo Alimentarias
- crearParedCompleta(1.3f, 2.28f, -0.45f, 6.0f, 0.1f, 0.05f, 255, 167, 38, 0);//pared Externa Viendo Alimentarias
- crearVentanaCerrada(1.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha1//Ventana Viendo Alimentarias PtCentral
- crearVentanaCerrada(0.05f, 2.02f, -0.45f, 0.9f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha1//Ventana Viendo Alimentarias PtCentra2
- crearParedCompleta(0.55f, 2.28f, -0.45f, 0.85f, 0.1f, 0.05f, 255, 167, 38, 0);//pared Externa ArribaCentro Viendo Alimentarias
- crearParedCompleta(-4.61f, 1.78f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pared Externa 1
- crearVentanaCerrada(-1.55f, 2.18f, -4.61f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
- crearVentanaCerrada(-0.75f, 2.18f,  -4.61f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
- crearVentanaCerrada(0.05f, 2.18f,  -4.61f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
- 
- 
+        crearParedCompleta(1.3f, 1.7f, -0.45f, 6.0f, 0.15f, 0.05f, 255, 167, 38, 0);//pared Externa Viendo Alimentarias
+        crearParedCompleta(6.9f, 2.02f, -0.45f, 0.4f, 0.17f, 0.05f, 255, 167, 38, 0);//Minipared Pegada al exterior Lado Derecho
+        crearVentanaCerrada(2.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha1
+        crearVentanaCerrada(3.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha2
+        crearVentanaCerrada(4.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha3
+        crearVentanaCerrada(5.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha4
+        crearVentanaCerrada(6.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha5
+        crearVentanaCerrada(1.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha6
+        crearVentanaCerrada(0.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha7
+        crearVentanaCerrada(-1.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha8
+        crearVentanaCerrada(-2.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha9
+        crearVentanaCerrada(-3.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha10
+        crearVentanaCerrada(-4.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha11
+        crearParedCompleta(-4.61f, 2.02f, -0.45f, 0.085f, 0.2f, 0.05f, 255, 167, 38, 0);//pared Externa Viendo Alimentarias
+        crearParedCompleta(1.3f, 2.28f, -0.45f, 6.0f, 0.1f, 0.05f, 255, 167, 38, 0);//pared Externa Viendo Alimentarias
+        crearVentanaCerrada(1.0f, 2.02f, -0.45f, 1.0f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha1//Ventana Viendo Alimentarias PtCentral
+        crearVentanaCerrada(0.05f, 2.02f, -0.45f, 0.9f, 0.325f, 0.05f, 0);//Ventana Viendo Alimentarias PtDerecha1//Ventana Viendo Alimentarias PtCentra2
+        crearParedCompleta(0.55f, 2.28f, -0.45f, 0.85f, 0.1f, 0.05f, 255, 167, 38, 0);//pared Externa ArribaCentro Viendo Alimentarias
+        crearParedCompleta(-4.61f, 1.78f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pared Externa 1
+        crearVentanaCerrada(-1.55f, 2.18f, -4.61f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
+        crearVentanaCerrada(-0.75f, 2.18f, -4.61f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
+        crearVentanaCerrada(0.05f, 2.18f, -4.61f, 0.8f, 0.4f, 0.05f, 90);//Ventana no se abre1
+
         crearPisoSalon(5.75f, 1.58f, 0.75f, 1.5f, 0.002f, 1.2f);//Piso Hasta el fondo
         crearPisoSalon(2.75f, 1.58f, 0.75f, 1.5f, 0.002f, 1.2f);//Piso mas cerca entrada salon
+
+        //--------------LABORATORIO DE ALIMENTARIAS-----------------
+        crearParedCompleta(-4.65f, 0.30f, -2.5f, 2.0f, 0.3f, 0.05f, 255, 167, 38, 90);//pared VerticalIzq
+        crearParedCompleta(1.3f, 0.30f, -4.5f, 6.0f, 0.3f, 0.05f, 255, 167, 38, 0);//pared HorizontalFinal
+        crearParedCompleta(7.25f, 0.30f, -2.5f, 2.0f, 0.3f, 0.05f, 255, 167, 38, 90);//pared VerticalIzq
+        crearTechoTriangularPrisma(0.5f, 0.6f, -4.65f, 4.1f, 0.4f, 12.0f, 120, 120, 120, 90);
+        crearPisoSalon2(-2.65f, -0.01f, -2.5f, 2.0f, 0.001f, 2.0f);
+        crearPisoSalon2(1.35f, -0.01f, -2.5f, 2.0f, 0.001f, 2.0f);
+        crearPisoSalon2(5.25f, -0.01f, -2.5f, 2.0f, 0.001f, 2.0f);
+        agregarArbol(-0.5f, 0.38f, 7.5f,1.0f,1.0f);
     }
 
     public void agregarCajitaTeletransporte(float x, float y, float z) {
@@ -899,6 +873,16 @@ crearParedCompleta(7.25f, 1.78f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pa
         tgMundo.addChild(tgPisoSalon1);
     }
 
+    public void crearPisoSalon2(float x, float y, float z,
+            float ancho, float alto, float profundidad) {
+        Box bxPisoSalon1 = new Box(ancho, alto, profundidad, paraTextura, textura.crearTexturas("piso2.jpg"));//c.setColor(38, 238, 240)
+        Transform3D t3dPisoSalon1 = new Transform3D();
+        t3dPisoSalon1.set(new Vector3d(x, y, z));
+        TransformGroup tgPisoSalon1 = new TransformGroup(t3dPisoSalon1);
+        tgPisoSalon1.addChild(bxPisoSalon1);
+        tgMundo.addChild(tgPisoSalon1);
+    }
+
     public void crearParedCompleta(float x, float y, float z,
             float ancho, float alto, float profundidad,
             int R, int G, int B,
@@ -928,6 +912,108 @@ crearParedCompleta(7.25f, 1.78f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pa
         tgPared.addChild(bxPared);
     }
 
+    public void crearTechoTriangularPrisma(float x, float y, float z,
+            float ancho, float alto, float profundidad,
+            int R, int G, int B,
+            float anguloRotacionGrados) {
+
+        // === VÉRTICES DEL PRISMA TRIANGULAR ===
+        Point3f[] vertices = new Point3f[]{
+            new Point3f(0, 0, 0), // V0: base inferior izquierda
+            new Point3f(ancho, 0, 0), // V1: base inferior derecha
+            new Point3f(0, alto, 0), // V2: techo izquierdo
+            new Point3f(0, 0, profundidad), // V3: atrás inferior izquierda
+            new Point3f(ancho, 0, profundidad), // V4: atrás inferior derecha
+            new Point3f(0, alto, profundidad) // V5: atrás techo izquierdo
+        };
+
+        // === CARAS LATERALES RECTANGULARES ===
+        QuadArray carasRectas = new QuadArray(12,
+                GeometryArray.COORDINATES | GeometryArray.NORMALS);
+
+        // Lado derecho (rectángulo entre V1, V4)
+        carasRectas.setCoordinate(0, vertices[1]);
+        carasRectas.setCoordinate(1, vertices[4]);
+        carasRectas.setCoordinate(2, vertices[3]);
+        carasRectas.setCoordinate(3, vertices[0]);
+
+        // Lado techo inclinado (V2 a V5)
+        carasRectas.setCoordinate(4, vertices[2]);
+        carasRectas.setCoordinate(5, vertices[5]);
+        carasRectas.setCoordinate(6, vertices[4]);
+        carasRectas.setCoordinate(7, vertices[1]);
+
+        // Fondo (V3-V4-V5-V2)
+        carasRectas.setCoordinate(8, vertices[3]);
+        carasRectas.setCoordinate(9, vertices[4]);
+        carasRectas.setCoordinate(10, vertices[5]);
+        carasRectas.setCoordinate(11, vertices[2]);
+
+        for (int i = 0; i < 12; i++) {
+            carasRectas.setNormal(i, new Vector3f(0, 0, 1)); // simplificado
+        }
+
+        // === TRIÁNGULOS: Frontal y Trasero (techo) ===
+        TriangleArray triangulos = new TriangleArray(6,
+                GeometryArray.COORDINATES | GeometryArray.NORMALS | GeometryArray.TEXTURE_COORDINATE_2);
+
+        // Cara frontal triangular
+        triangulos.setCoordinate(0, vertices[0]);
+        triangulos.setCoordinate(1, vertices[1]);
+        triangulos.setCoordinate(2, vertices[2]);
+
+        // Textura para el frente
+        triangulos.setTextureCoordinate(0, 0, new TexCoord2f(0, 0));
+        triangulos.setTextureCoordinate(0, 1, new TexCoord2f(1, 0));
+        triangulos.setTextureCoordinate(0, 2, new TexCoord2f(0, 1));
+
+        // Cara trasera triangular
+        triangulos.setCoordinate(3, vertices[3]);
+        triangulos.setCoordinate(4, vertices[4]);
+        triangulos.setCoordinate(5, vertices[5]);
+
+        triangulos.setTextureCoordinate(0, 3, new TexCoord2f(0, 0));
+        triangulos.setTextureCoordinate(0, 4, new TexCoord2f(1, 0));
+        triangulos.setTextureCoordinate(0, 5, new TexCoord2f(0, 1));
+
+        // Normales hacia fuera
+        for (int i = 0; i < 6; i++) {
+            triangulos.setNormal(i, new Vector3f(0, 1, 0));
+        }
+
+        // === APARIENCIA ===
+        Appearance aparTecho = textura.crearTexturas("techo.jpg");
+        PolygonAttributes paTex = new PolygonAttributes();
+        paTex.setCullFace(PolygonAttributes.CULL_NONE); // que no desaparezca
+        aparTecho.setPolygonAttributes(paTex);
+
+        Appearance aparLaterales = new Appearance();
+        Color3f naranja = new Color3f(255f / 255f, 167f / 255f, 38f / 255f);
+        ColoringAttributes ca = new ColoringAttributes(naranja, ColoringAttributes.SHADE_FLAT);
+        aparLaterales.setColoringAttributes(ca);
+        PolygonAttributes paColor = new PolygonAttributes();
+        paColor.setCullFace(PolygonAttributes.CULL_NONE);
+        aparLaterales.setPolygonAttributes(paColor);
+
+        // === SHAPES ===
+        Shape3D shapeTriangulos = new Shape3D(triangulos, aparLaterales);
+        Shape3D shapeLados = new Shape3D(carasRectas, aparTecho);
+
+        // === TRANSFORMACIÓN FINAL ===
+        Transform3D rotY = new Transform3D();
+        rotY.rotY(Math.toRadians(anguloRotacionGrados));
+        Transform3D transl = new Transform3D();
+        transl.setTranslation(new Vector3f(x, y, z));
+        rotY.mul(transl);
+
+        TransformGroup tg = new TransformGroup(rotY);
+        tg.addChild(shapeTriangulos);
+        tg.addChild(shapeLados);
+
+        tgMundo.addChild(tg);
+        listaTransform.add(tg);
+    }
+
     public void crearVentana(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
         Ventana ventana = new Ventana(x, y, z, ancho, alto, profundidad, rotYGrados);
         tgMundo.addChild(ventana);
@@ -943,6 +1029,12 @@ crearParedCompleta(7.25f, 1.78f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pa
         Puerta Puerta1 = new Puerta(x, y, z, ancho, alto, profundidad, rotYGrados);
         tgMundo.addChild(Puerta1);
         listaPuerta.add(Puerta1);
+    }
+
+    public void crearPuertaDoble(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
+        PuertasDobles Puerta1 = new PuertasDobles(x, y, z, ancho, alto, profundidad, rotYGrados);
+        tgMundo.addChild(Puerta1);
+        listaPuertaD.add(Puerta1);
     }
 
     private void crearDetectorProximidadVentamaVentama(final Ventana ventana, final float umbral) {
@@ -1178,6 +1270,7 @@ crearParedCompleta(7.25f, 1.78f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pa
                             if (linea.equals("Presionado  Boton")) {
                                 verificarVentanasCercanasYTogglear();
                                 verificarPuertasCercanasYTogglear();
+                                verificarPuertasDCercanasYTogglear();
                             }
                             if (linea.equals("Suelto  Arriba") || linea.equals("Presionado  Arriba")) {
                                 MoverAdelante(tgMundo, steve.obtenerPanza(), 0.8);
@@ -1294,6 +1387,12 @@ crearParedCompleta(7.25f, 1.78f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pa
         }
     }
 
+    private void verificarPuertasDCercanasYTogglear() {
+        for (PuertasDobles puertaD : listaPuertaD) {
+            puertaD.toggle(); // Abre/cierra todas las ventanas sin verificar distancia
+        }
+    }
+
     //----------------Arboles----------------
     public Shape3D crearPlanoArbolDobleCara(float x, float y, float z, float ancho, float altura, String tex) {
         Appearance apariencia = Textura.getInstance().crearTexturas(tex);
@@ -1389,10 +1488,10 @@ crearParedCompleta(7.25f, 1.78f, 0.8f, 1.2f, 0.2f, 0.05f, 255, 167, 38, 90);//pa
         return tgPosicionado;
     }
 
-    public void agregarArbol(float posX, float posY, float posZ) {
-        float ancho = 0.5f;
-        float altura = 0.7f;
-        String textura = "pino.png"; // Textura por defecto
+    public void agregarArbol(float posX, float posY, float posZ,float ancho1,float alto1) {
+        float ancho = ancho1;
+        float altura = alto1;
+        String textura = "pino2.png"; // Textura por defecto
         TransformGroup arbol = crearArbolCompleto(posX, posY, posZ, ancho, altura, textura);
         tgMundo.addChild(arbol);
     }
