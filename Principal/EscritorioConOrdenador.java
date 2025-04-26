@@ -89,7 +89,7 @@ public class EscritorioConOrdenador extends BranchGroup {
         tgPrincipal.addChild(tgTeclado);
 
         // ---------- CPU ----------
-        Box cpu = new Box(0.05f, 0.15f, 0.1f, aparienciaNegra);
+        Box cpu = new Box(0.05f, 0.15f, 0.05f, aparienciaNegra);
         Transform3D tCPU = new Transform3D();
         tCPU.setTranslation(new Vector3f(anchoTabla / 2 - 0.06f, 0.15f, 0.0f));
         TransformGroup tgCPU = new TransformGroup(tCPU);

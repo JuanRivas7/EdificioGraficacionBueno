@@ -6,13 +6,19 @@ import com.sun.j3d.utils.image.TextureLoader;
 import javax.media.j3d.*;
 import javax.vecmath.*;
 
-public class Mesa extends TransformGroup {
+public class Mesa extends BranchGroup {  // Cambiar de TransformGroup a BranchGroup {
 
-    public Mesa() {
-        this.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-        this.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
-        this.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
+    public Mesa(float rotacionGrados) {
+        this.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+        this.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
 
+        // Grupo de transformación para rotar toda la mesa
+        TransformGroup tgRotacion = new TransformGroup();
+        tgRotacion.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+
+        Transform3D rotacion = new Transform3D();
+        rotacion.rotY(Math.toRadians(rotacionGrados));
+        tgRotacion.setTransform(rotacion);
         // Crear apariencia con textura de madera
         Appearance madera = new Appearance();
 
@@ -37,10 +43,9 @@ public class Mesa extends TransformGroup {
         tSuperficie.setTranslation(new Vector3f(0.0f, 0.35f, 0.0f));
         TransformGroup tgSuperficie = new TransformGroup(tSuperficie);
         tgSuperficie.addChild(superficie);
-        this.addChild(tgSuperficie);
-
+        tgRotacion.addChild(tgSuperficie);
         // Tamaño y diseño de patas más estilizadas
-        float alturaPata = 0.28f;
+        float alturaPata = 0.20f;
         float grosorPata = 0.015f;
 
         // Posiciones ajustadas de las patas
@@ -57,7 +62,13 @@ public class Mesa extends TransformGroup {
             tPata.setTranslation(pos);
             TransformGroup tgPata = new TransformGroup(tPata);
             tgPata.addChild(pata);
-            this.addChild(tgPata);
+            tgRotacion.addChild(tgPata);
         }
-    }
+            this.addChild(tgRotacion);
+            this.compile();
+     }
+     // Constructor por defecto (sin rotación)
+     public Mesa() {
+         this(0);
+}
 }

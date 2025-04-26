@@ -40,6 +40,7 @@ import javax.media.j3d.PolygonAttributes;
 import javax.media.j3d.QuadArray;
 import javax.media.j3d.Shape3D;
 import javax.media.j3d.SharedGroup;
+import javax.media.j3d.Texture;
 import javax.media.j3d.TransparencyAttributes;
 import javax.media.j3d.TriangleArray;
 import javax.vecmath.Point3f;
@@ -196,6 +197,7 @@ public class EscenaGrafica {
         crearParedCompleta(3.08f, 0.38f, 2.0f, 0.48f, 0.4f, 0.05f, 255, 167, 38, 0);//Falta Ajustar
         EscaleraU escalera = new EscaleraU(this, Colisiones2);
         escalera.construir(1.7f, 0.0f, 2.0f, 1.2f, 0.8f, 1.6f, 180);
+        crearPisoSalon2(2.3f, -0.009f, 3.8f, 1.25f, 0.001f, 1.9f);
         // agregarCajitaTeletransporte(0.0f, -0.03f, -1.0f);//Falta Posicionar
         //agregarCajitaTeletransporte(-0.6f, 0.2f, -3.0f);//Falta Posicionar
         //-------------Salon derecha-----------
@@ -368,8 +370,7 @@ public class EscenaGrafica {
 
         escalera.construir(1.7f, 0.8f, 2.0f, 1.2f, 0.8f, 1.6f, 180);
         //agregarCajitaTeletransporte(2.0f, 0.8f, 1.9f);//Falta Posicionar
-        agregarCajitaTeletransporte(1.4f, 0.0f, 1.5f);//Falta Posicionar
-        //-------------Salon derecha-----------
+        agregarCajitaTeletransporte(1.4f, 0.0f, 1.2f);        //-------------Salon derecha-----------
         crearParedCompleta(3.6f, 1.18f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 1
         crearParedCompleta(4.0f, 0.98f, 6.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 1
         crearParedCompleta(4.4f, 1.18f, 6.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 2
@@ -546,13 +547,11 @@ public class EscenaGrafica {
         crearParedCompleta(3.08f, 1.98f, 2.0f, 0.48f, 0.4f, 0.05f, 255, 167, 38, 0);//Falta Ajustar
 
         //agregarCajitaTeletransporte(2.0f, 1.6f, 1.9f);//Falta Posicionar
-        agregarCajitaTeletransporte(1.4f, 0.8f, 1.5f);//Falta Posicionar
+        agregarCajitaTeletransporte(1.4f, 0.8f, 1.7f);//Falta Posicionar
 //-------------Salon derecha-----------
         crearParedCompleta(5.4f, 1.78f, 6.0f, 1.89f, 0.2f, 0.05f, 255, 167, 38, 0); //pared Balcon1
-
         crearParedCompleta(3.6f, 1.98f, 5.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 1
         crearParedCompleta(4.0f, 1.78f, 5.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 2
-
         crearParedCompleta(4.4f, 1.98f, 5.0f, 0.1f, 0.4f, 0.05f, 255, 253, 208, 0);//muro2 Salon Izquierda
         crearParedCompleta(4.8f, 1.78f, 5.0f, 0.3f, 0.2f, 0.05f, 255, 167, 38, 0); //pared enfrente 2
         crearParedCompleta(5.2f, 1.98f, 5.0f, 0.1f, 0.4f, 0.1f, 255, 253, 208, 0); //muro salon 3
@@ -635,7 +634,127 @@ public class EscenaGrafica {
         crearPisoSalon2(-2.65f, -0.01f, -2.5f, 2.0f, 0.001f, 2.0f);
         crearPisoSalon2(1.35f, -0.01f, -2.5f, 2.0f, 0.001f, 2.0f);
         crearPisoSalon2(5.25f, -0.01f, -2.5f, 2.0f, 0.001f, 2.0f);
-        agregarArbol(-0.5f, 0.38f, 7.5f,1.0f,1.0f);
+
+        float[][] posiciones = {
+            // ========== SILLAS ORIGINALES ==========
+            // Salon 1 Tercer piso
+            {-3.5f, 1.6f, 3.5f, 90.0f},
+            {-3.5f, 1.6f, 4.0f, 90.0f},
+            {-3.5f, 1.6f, 3.0f, 90.0f},
+            {-2.8f, 1.6f, 3.8f, 90.0f},
+            {-2.8f, 1.6f, 3.5f, 90.0f},
+            {-2.8f, 1.6f, 3.0f, 90.0f},
+            {-4.2f, 1.6f, 3.0f, 90.0f},
+            {-4.2f, 1.6f, 4.0f, 90.0f},
+            {-4.2f, 1.6f, 3.5f, 90.0f},
+            // Salon 2 Tercer piso
+            {-0.7f, 1.6f, 3.5f, 90.0f},
+            {-0.7f, 1.6f, 4.0f, 90.0f},
+            {-0.7f, 1.6f, 3.0f, 90.0f},
+            {0.0f, 1.6f, 3.8f, 90.0f},
+            {0.0f, 1.6f, 3.5f, 90.0f},
+            {0.0f, 1.6f, 3.0f, 90.0f},
+            {-1.4f, 1.6f, 3.0f, 90.0f},
+            {-1.4f, 1.6f, 4.0f, 90.0f},
+            {-1.4f, 1.6f, 3.5f, 90.0f},
+            // Salon 3 Tercer piso
+            {5.3f, 1.6f, 3.5f, 90.0f},
+            {5.3f, 1.6f, 4.0f, 90.0f},
+            {5.3f, 1.6f, 3.0f, 90.0f},
+            {6.0f, 1.6f, 3.8f, 90.0f},
+            {6.0f, 1.6f, 3.5f, 90.0f},
+            {6.0f, 1.6f, 3.0f, 90.0f},
+            {4.6f, 1.6f, 3.0f, 90.0f},
+            {4.6f, 1.6f, 4.0f, 90.0f},
+            {4.6f, 1.6f, 3.5f, 90.0f},
+            // ========== SILLAS ADICIONALES PISO 1 ==========
+            {4.8f, 0.0f, 4.8f, 90.0f},
+            {4.8f, 0.0f, 4.2f, 90.0f},
+            {4.8f, 0.0f, 3.6f, 90.0f},
+            {5.4f, 0.0f, 4.8f, 90.0f},
+            {5.4f, 0.0f, 4.2f, 90.0f},
+            {5.4f, 0.0f, 3.6f, 90.0f},
+            // ========== SILLAS ADICIONALES PISO 2 ==========
+            {4.8f, 0.8f, 4.8f, 90.0f},
+            {4.8f, 0.8f, 4.2f, 90.0f},
+            {4.8f, 0.8f, 3.6f, 90.0f},
+            {5.4f, 0.8f, 4.8f, 90.0f},
+            {5.4f, 0.8f, 4.2f, 90.0f},
+            {5.4f, 0.8f, 3.6f, 90.0f}
+
+        };
+
+        for (float[] pos : posiciones) {
+            Transform3D transform = new Transform3D();
+            transform.setTranslation(new Vector3f(pos[0], pos[1], pos[2]));
+            TransformGroup tg = new TransformGroup(transform);
+            tg.addChild(new Silla(pos[3]));  // Pasa la rotación al constructor
+            tgMundo.addChild(tg);
+        }
+        // Crear múltiples mesas en distintas posiciones y rotaciones
+        float[][] posicionesMesas = {
+            // Ya tenías:
+            {-2.12f, 1.6f, 4.0f, 90.0f}, // Mesa piso 3 - salón 1
+            {0.6f, 1.6f, 4.0f, 90.0f}, // Mesa piso 3 - salón 2
+            {6.5f, 1.6f, 4.0f, 90.0f}, // Mesa piso 3 - salón 3
+
+            // Nuevas mesas para salones derecha
+            {6.5f, 0.0f, 2.8f, 90.0f}, // Piso 1 - salón derecho
+            {6.5f, 0.8f, 2.8f, 90.0f} // Piso 2 - salón derecho
+        };
+
+        for (float[] pos : posicionesMesas) {
+            Transform3D transform = new Transform3D();
+            transform.setTranslation(new Vector3f(pos[0], pos[1], pos[2]));
+            TransformGroup tg = new TransformGroup(transform);
+            tg.addChild(new Mesa(pos[3]));  // Pasa la rotación al constructor
+            tgMundo.addChild(tg);
+        }
+        //Computadoras Piso 1
+        crearMuebleComputadora(-4.1f, 0.0f, -2.1f, 2.0f, 0.2f, 0.15f, 90);//Inicio
+        crearPC(-2.1f, 0.18f, 3.45f, 0.3f, 0.15f, 0.03f, 90);//PC1 Entrada>Ventanas
+        crearPC(-2.1f, 0.18f, 4.1f, 0.3f, 0.15f, 0.03f, 90);//PC2 Entrada>Ventanas
+        crearPC(-2.1f, 0.18f, 4.75f, 0.3f, 0.15f, 0.03f, 90);//PC3 Entrada>Ventanas
+        crearMuebleComputadora(-4.1f, 0.0f, -3.95f, 2.0f, 0.2f, 0.15f, 90);//Fondo
+        crearPC(-3.95f, 0.18f, 3.45f, 0.3f, 0.15f, 0.03f, 90);//PC1 Entrada>Ventanas
+        crearPC(-3.95f, 0.18f, 4.1f, 0.3f, 0.15f, 0.03f, 90);//PC2 Entrada>Ventanas
+        crearPC(-3.95f, 0.18f, 4.75f, 0.3f, 0.15f, 0.03f, 90);//PC3 Entrada>Ventanas
+        //Computadoras Piso 2
+        crearMuebleComputadora(-4.1f, 0.78f, -2.1f, 2.0f, 0.2f, 0.15f, 90);//Inicio
+        crearPC(-2.1f, 0.98f, 3.45f, 0.3f, 0.15f, 0.03f, 90);//PC1 Entrada>Ventanas
+        crearPC(-2.1f, 0.98f, 4.1f, 0.3f, 0.15f, 0.03f, 90);//PC2 Entrada>Ventanas
+        crearPC(-2.1f, 0.98f, 4.75f, 0.3f, 0.15f, 0.03f, 90);//PC3 Entrada>Ventanas
+        crearMuebleComputadora(-4.1f, 0.78f, -3.95f, 2.0f, 0.2f, 0.15f, 90);//Fondo
+        crearPC(-3.95f, 0.98f, 3.45f, 0.3f, 0.15f, 0.03f, 90);//PC1 Entrada>Ventanas
+        crearPC(-3.95f, 0.98f, 4.1f, 0.3f, 0.15f, 0.03f, 90);//PC2 Entrada>Ventanas
+        crearPC(-3.95f, 0.98f, 4.75f, 0.3f, 0.15f, 0.03f, 90);//PC3 Entrada>Ventanas
+    }
+
+    public void crearMuebleComputadora(float x, float y, float z, float ancho, float alto, float profundo, float rotacionY) {
+        // Obtener apariencia con textura de madera
+        Appearance aparienciaMadera = textura.crearTexturas("madera.jpg");
+
+        // Crear el mueble como un Box (se centra en su posición)
+        Box mueble = new Box(ancho / 2, alto / 2, profundo / 2,
+                Primitive.GENERATE_NORMALS + Primitive.GENERATE_TEXTURE_COORDS, aparienciaMadera);
+
+        // Crear rotación en Y
+        Transform3D rotacion = new Transform3D();
+        rotacion.rotY(Math.toRadians(rotacionY));
+
+        // Posicionamiento (ajustamos en Y para que toque el suelo con base)
+        Transform3D traslacion = new Transform3D();
+        traslacion.setTranslation(new Vector3f(x, y + alto / 2, z));
+
+        // Combinar rotación y traslación
+        rotacion.mul(traslacion);
+
+        // Grupo de transformación final
+        TransformGroup tg = new TransformGroup(rotacion);
+        tg.addChild(mueble);
+        tgMundo.addChild(tg);
+        listaBoxs.add(mueble);
+        listaTransform.add(tg);
     }
 
     public void agregarCajitaTeletransporte(float x, float y, float z) {
@@ -647,8 +766,7 @@ public class EscenaGrafica {
         apariencia.setMaterial(material);
 
         // 2. Crear la caja de teletransporte
-        Box cajita = new Box(0.2f, 0.05f, 0.2f, apariencia);
-
+        Box cajita = new Box(0.2f, 0.01f, 0.05f, apariencia);
         // 3. Posicionar la cajita
         Transform3D t3d = new Transform3D();
         t3d.setTranslation(new Vector3f(x, y, z));
@@ -673,7 +791,7 @@ public class EscenaGrafica {
                         Vector3d posicion = new Vector3d();
                         t3dMundo.get(posicion);
 
-                        posicion.y -= 1.0;
+                        posicion.y -= 0.8;
                         posicion.z += 0.0;
                         t3dMundo.setTranslation(posicion);
                         tgMundo.setTransform(t3dMundo);
@@ -1035,6 +1153,11 @@ public class EscenaGrafica {
         PuertasDobles Puerta1 = new PuertasDobles(x, y, z, ancho, alto, profundidad, rotYGrados);
         tgMundo.addChild(Puerta1);
         listaPuertaD.add(Puerta1);
+    }
+
+    public void crearPC(float x, float y, float z, float ancho, float alto, float profundidad, float rotYGrados) {
+        EscritorioConOrdenador pc = new EscritorioConOrdenador(x, y, z, rotYGrados, ancho, profundidad, alto);
+        tgMundo.addChild(pc);
     }
 
     private void crearDetectorProximidadVentamaVentama(final Ventana ventana, final float umbral) {
@@ -1488,10 +1611,10 @@ public class EscenaGrafica {
         return tgPosicionado;
     }
 
-    public void agregarArbol(float posX, float posY, float posZ,float ancho1,float alto1) {
-        float ancho = ancho1;
-        float altura = alto1;
-        String textura = "pino2.png"; // Textura por defecto
+    public void agregarArbol(float posX, float posY, float posZ) {
+        float ancho = 0.5f;
+        float altura = 0.7f;
+        String textura = "pino.png"; // Textura por defecto
         TransformGroup arbol = crearArbolCompleto(posX, posY, posZ, ancho, altura, textura);
         tgMundo.addChild(arbol);
     }

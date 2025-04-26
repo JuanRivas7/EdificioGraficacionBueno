@@ -1,66 +1,101 @@
 package Principal;
 
+import com.sun.j3d.utils.geometry.Box;
+import com.sun.j3d.utils.geometry.Cylinder;
+import com.sun.j3d.utils.image.TextureLoader;
 import javax.media.j3d.*;
 import javax.vecmath.*;
-import com.sun.j3d.utils.geometry.*;
 
 public class Silla extends BranchGroup {
-
-    public Silla() {
-        // Apariencia tipo madera
+TransformGroup tgRotacion;
+    public Silla(float rotacionGrados) {
+        // --- Apariencia madera
         Appearance madera = new Appearance();
-        ColoringAttributes color = new ColoringAttributes(new Color3f(0.5f, 0.25f, 0.1f), ColoringAttributes.NICEST);
-        madera.setColoringAttributes(color);
+        Texture texMadera = new TextureLoader("src/img/Madera.jpg", null).getTexture();
 
-        // Asiento
-        Box asiento = new Box(0.1f, 0.01f, 0.1f, madera);
+        madera.setTexture(texMadera);
+
+        // --- Apariencia metal
+        Appearance metal = new Appearance();
+        Texture texMetal = new TextureLoader("src/img/metalSilla.jpg", null).getTexture();
+        metal.setTexture(texMetal);
+
+        tgRotacion = new TransformGroup();
+        Transform3D rotacion = new Transform3D();
+        rotacion.rotY(Math.toRadians(rotacionGrados));
+        tgRotacion.setTransform(rotacion);
+
+        // --- Asiento
+        Box asiento = new Box(0.2f, 0.015f, 0.2f, Box.GENERATE_TEXTURE_COORDS, madera);
         Transform3D tAsiento = new Transform3D();
-        tAsiento.setTranslation(new Vector3f(0.0f, 0.15f, 0.0f));
+        tAsiento.setTranslation(new Vector3f(0.0f, 0.3f, 0.0f));
         TransformGroup tgAsiento = new TransformGroup(tAsiento);
         tgAsiento.addChild(asiento);
-        this.addChild(tgAsiento);
+        tgRotacion.addChild(tgAsiento);
 
-        // Respaldo
-        Box respaldo = new Box(0.1f, 0.1f, 0.01f, madera);
+        // --- Respaldo
+        Box respaldo = new Box(0.2f, 0.1f, 0.015f, Box.GENERATE_TEXTURE_COORDS, madera);
         Transform3D tRespaldo = new Transform3D();
-        tRespaldo.setTranslation(new Vector3f(0.0f, 0.32f, -0.09f));
+        tRespaldo.setTranslation(new Vector3f(0.0f, 0.45f, -0.18f));
         TransformGroup tgRespaldo = new TransformGroup(tRespaldo);
         tgRespaldo.addChild(respaldo);
-        this.addChild(tgRespaldo);
+        tgRotacion.addChild(tgRespaldo);
 
-        // Patas (más juntas)
-        float altoPata = 0.15f;
-        float radio = 0.008f;
-        float offset = 0.08f;
-
-        float[][] posiciones = {
-            {-offset, 0.075f, -offset}, {offset, 0.075f, -offset},
-            {-offset, 0.075f, offset}, {offset, 0.075f, offset}
+        // --- Patas (4 cilindros verticales)
+        float alturaPata = 0.3f;
+        float radioPata = 0.012f;
+        float[][] posicionesPatas = {
+            {-0.18f, alturaPata / 2, -0.18f}, {0.18f, alturaPata / 2, -0.18f},
+            {-0.18f, alturaPata / 2,  0.18f}, {0.18f, alturaPata / 2,  0.18f}
         };
 
-        for (float[] pos : posiciones) {
-            Cylinder pata = new Cylinder(radio, altoPata * 2, madera);
+        for (float[] pos : posicionesPatas) {
+            Cylinder pata = new Cylinder(radioPata, alturaPata, Cylinder.GENERATE_TEXTURE_COORDS, metal);
             Transform3D tPata = new Transform3D();
             tPata.setTranslation(new Vector3f(pos[0], pos[1], pos[2]));
             TransformGroup tgPata = new TransformGroup(tPata);
             tgPata.addChild(pata);
-            this.addChild(tgPata);
+            tgRotacion.addChild(tgPata);
         }
 
-        // Paleta para escribir (centro en esquina superior izquierda del asiento)
-Box paleta = new Box(0.08f, 0.005f, 0.06f, madera);
-Transform3D tPaleta = new Transform3D();
+        // --- Estante inferior (rejilla simple)
+        Box rejilla = new Box(0.15f, 0.005f, 0.15f, Box.GENERATE_TEXTURE_COORDS, metal);
+        Transform3D tRejilla = new Transform3D();
+        tRejilla.setTranslation(new Vector3f(0.0f, 0.09f, 0.0f));
+        TransformGroup tgRejilla = new TransformGroup(tRejilla);
+        tgRejilla.addChild(rejilla);
+        tgRotacion.addChild(tgRejilla);
 
-// Calculamos la posición para que el centro de la paleta esté en (-0.1, 0.15, -0.1)
-float xPaleta = 0.1f; // alineado con borde izquierdo
-float yPaleta = 0.23f; // un poco arriba del asiento
-float zPaleta = 0.1f; // alineado con borde trasero
-tPaleta.setTranslation(new Vector3f(xPaleta, yPaleta, zPaleta));
-TransformGroup tgPaleta = new TransformGroup(tPaleta);
-tgPaleta.addChild(paleta);
-this.addChild(tgPaleta);
+        // --- Soporte de paleta (brazo metálico)
+        Cylinder soportePaleta = new Cylinder(0.007f, 0.35f, Cylinder.GENERATE_TEXTURE_COORDS, metal);
+        Transform3D tSoporte = new Transform3D();
+        tSoporte.rotZ(Math.toRadians(90));
+        tSoporte.setTranslation(new Vector3f(0.22f, 0.35f, 0.0f));
+        TransformGroup tgSoporte = new TransformGroup(tSoporte);
+        tgSoporte.addChild(soportePaleta);
+        tgRotacion.addChild(tgSoporte);
 
-
+        // --- Paleta (forma recortada simplificada como Box)
+        Box paleta = new Box(0.15f, 0.01f, 0.10f, Box.GENERATE_TEXTURE_COORDS, madera);
+        Transform3D tPaleta = new Transform3D();
+        tPaleta.setTranslation(new Vector3f(0.35f, 0.42f, 0.0f));
+        TransformGroup tgPaleta = new TransformGroup(tPaleta);
+        tgPaleta.addChild(paleta);
+        tgRotacion.addChild(tgPaleta);
+        EscalarTG(tgRotacion, 0.7f);
+        this.addChild(tgRotacion);
+        
         this.compile();
+    }
+ public void EscalarTG(TransformGroup tg, float x) {
+        Transform3D leer = new Transform3D();
+        Transform3D mover = new Transform3D();
+        tg.getTransform(leer);
+        mover.setScale(x);
+        leer.mul(mover);
+        tg.setTransform(leer);
+    }
+    public Silla() {
+        this(0);
     }
 }
