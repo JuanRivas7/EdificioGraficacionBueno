@@ -14,8 +14,8 @@ public class RepositorioObjetos3D {
     public static SharedGroup puerta;
     public static ArrayList<Puerta> todasLasPuertas = new ArrayList<>();
     public static SharedGroup peldaño;
-    
     public static void inicializar() {
+        
         mesa = new SharedGroup();
         mesa.addChild(new Mesa());
 

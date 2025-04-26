@@ -5,7 +5,7 @@
 package Principal;
 
 //import com.fazecast.jSerialComm.SerialPort;
-import com.fazecast.jSerialComm.SerialPort;
+//import com.fazecast.jSerialComm.SerialPort;
 import com.sun.j3d.utils.behaviors.keyboard.KeyNavigatorBehavior;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.geometry.Box;
@@ -70,7 +70,7 @@ public class EscenaGrafica {
     Point3d posPersonaje = new Point3d(0, 0, 0);
     Colisiones Colisiones = new Colisiones();
     Colisiones2 Colisiones2 = new Colisiones2();
-    SerialPort puerto;
+//    SerialPort puerto;
 
     public EscenaGrafica(java.awt.Component canvas) {
         RepositorioObjetos3D.inicializar();
@@ -100,13 +100,13 @@ public class EscenaGrafica {
         //objRaiz.addChild(tgPiso);
         objRaiz.addChild(myMouseRotate);
         objRaiz.addChild(tgMundo);
-        steve.Posicion(0, 0.1f, 1f);
+        steve.Posicion(0, 0.1f, 2f);
         tgMundo.addChild(tgPiso);
         steve.girarTG(steve.obtenerPanza(), 180, "Y");
         objRaiz.addChild(steve.obtenerCuerpo());
         configurarIluminacion(objRaiz);
         instanciador = new InstanciadorObjetos3D(tgMundo, listaTransform, listaBoxs);
-        conectarPuerto();
+//        conectarPuerto();
         registrarControlesPorTeclado(canvas);
 //         //Mesa 60cm x 40cm x 60cm aprox (en metros: 0.3f, 0.2f, 0.3f)
         //agregarInstanciaConColision(RepositorioObjetos3D.mesa, 1.5f, 0f, 0f, 0.3f, 0.2f, 0.3f);
@@ -121,8 +121,12 @@ public class EscenaGrafica {
                 0.5f, // radio
                 0.55f // altura
         );
+  
+agregarInstancia(Maquinas.crearAmasadora(), -3.5f, 0.0f, -3.0f);
+//    agregarInstancia(Maquinas.crearRefrigerador(), -2.5f, 0.0f, -3.0f);
+//    agregarInstancia(Maquinas.crearHorno(), -1.5f, 0.0f, -3.0f);
+//    agregarInstancia(Maquinas.crearCortadora(), -0.5f, 0.0f, -3.0f);
 
-        // Agregar a tu escena
         tgMundo.addChild(cilindro);
         tgMundo.addChild(banda);
         //----------PISO 1-----------
@@ -728,7 +732,36 @@ public class EscenaGrafica {
         crearPC(-3.95f, 0.98f, 3.45f, 0.3f, 0.15f, 0.03f, 90);//PC1 Entrada>Ventanas
         crearPC(-3.95f, 0.98f, 4.1f, 0.3f, 0.15f, 0.03f, 90);//PC2 Entrada>Ventanas
         crearPC(-3.95f, 0.98f, 4.75f, 0.3f, 0.15f, 0.03f, 90);//PC3 Entrada>Ventanas
+        
+        // Ejemplo: crear una caja en (1, 0.5, 2) con tamaño 0.5x0.5x0.5
+crearCaja(-3.5f, 0.0f, -4.2f, 1.0f, 0.5f, 0.5f);
+crearCaja(-4.2f, 0.19f, -1.5f, 0.5f, 0.5f, 1.5f);
     }
+    
+    public void crearCaja(float x, float y, float z, float ancho, float alto, float profundidad) {
+    // Crear la apariencia con la textura de la caja
+    Appearance aparienciaCaja = textura.crearTexturas("cajas.jpeg");
+    
+    // Crear la caja con generación de normales y coordenadas de textura
+    Box caja = new Box(ancho/2, alto/2, profundidad/2, 
+                      Primitive.GENERATE_NORMALS + Primitive.GENERATE_TEXTURE_COORDS, 
+                      aparienciaCaja);
+    
+    // Configurar la transformación (posición)
+    Transform3D t3d = new Transform3D();
+    t3d.setTranslation(new Vector3f(x, y, z));
+    
+    // Crear el grupo de transformación y añadir la caja
+    TransformGroup tg = new TransformGroup(t3d);
+    tg.addChild(caja);
+    
+    // Añadir a la escena principal
+    tgMundo.addChild(tg);
+    
+    // Opcional: Registrar para detección de colisiones si es necesario
+    listaTransform.add(tg);
+    listaBoxs.add(caja);
+}
 
     public void crearMuebleComputadora(float x, float y, float z, float ancho, float alto, float profundo, float rotacionY) {
         // Obtener apariencia con textura de madera
@@ -1365,64 +1398,64 @@ public class EscenaGrafica {
         }
     }
 
-    private void conectarPuerto() {
-        puerto = SerialPort.getCommPort("COM5");
-        puerto.setBaudRate(9600);
-        puerto.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
-
-        if (puerto.openPort()) {
-            System.out.println("Puerto abierto");
-
-            Thread hilo;
-            hilo = new Thread(() -> {
-                try {
-                    InputStream entrada = puerto.getInputStream();
-                    StringBuilder mensaje = new StringBuilder();
-
-                    while (true) {
-                        int dato = entrada.read();
-                        if (dato == -1) {
-                            continue;
-                        }
-
-                        char caracter = (char) dato;
-                        if (caracter == '\n') {
-                            String linea = mensaje.toString().trim();
-                            mensaje.setLength(0); // Limpia el buffer
-                            System.out.println("Recibido: " + linea);
-                            if (linea.equals("Presionado  Boton")) {
-                                verificarVentanasCercanasYTogglear();
-                                verificarPuertasCercanasYTogglear();
-                                verificarPuertasDCercanasYTogglear();
-                            }
-                            if (linea.equals("Suelto  Arriba") || linea.equals("Presionado  Arriba")) {
-                                MoverAdelante(tgMundo, steve.obtenerPanza(), 0.8);
-                                steve.caminar();
-                            } else if (linea.equals("Suelto  Abajo") || linea.equals("Presionado  Abajo")) {
-                                MoverAtras(tgMundo, steve.obtenerPanza(), 0.8);
-                                steve.caminar();
-                            } else if (linea.equals("Suelto  Derecha") || linea.equals("Presionado  Derecha")) {
-                                rotarTG(tgMundo, 5, "Y", posPersonaje);
-                                steve.caminar();
-                            } else if (linea.equals("Suelto  Izquierda") || linea.equals("Presionado  Izquierda")) {
-                                rotarTG(tgMundo, -5, "Y", posPersonaje);
-                                steve.caminar();
-                            }
-                        } else {
-                            mensaje.append(caracter);
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-
-            hilo.start();
-
-        } else {
-            System.out.println("No se pudo abrir el puerto");
-        }
-    }
+//    private void conectarPuerto() {
+//        puerto = SerialPort.getCommPort("COM5");
+//        puerto.setBaudRate(9600);
+//        puerto.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
+//
+//        if (puerto.openPort()) {
+//            System.out.println("Puerto abierto");
+//
+//            Thread hilo;
+//            hilo = new Thread(() -> {
+//                try {
+//                    InputStream entrada = puerto.getInputStream();
+//                    StringBuilder mensaje = new StringBuilder();
+//
+//                    while (true) {
+//                        int dato = entrada.read();
+//                        if (dato == -1) {
+//                            continue;
+//                        }
+//
+//                        char caracter = (char) dato;
+//                        if (caracter == '\n') {
+//                            String linea = mensaje.toString().trim();
+//                            mensaje.setLength(0); // Limpia el buffer
+//                            System.out.println("Recibido: " + linea);
+//                            if (linea.equals("Presionado  Boton")) {
+//                                verificarVentanasCercanasYTogglear();
+//                                verificarPuertasCercanasYTogglear();
+//                                verificarPuertasDCercanasYTogglear();
+//                            }
+//                            if (linea.equals("Suelto  Arriba") || linea.equals("Presionado  Arriba")) {
+//                                MoverAdelante(tgMundo, steve.obtenerPanza(), 0.8);
+//                                steve.caminar();
+//                            } else if (linea.equals("Suelto  Abajo") || linea.equals("Presionado  Abajo")) {
+//                                MoverAtras(tgMundo, steve.obtenerPanza(), 0.8);
+//                                steve.caminar();
+//                            } else if (linea.equals("Suelto  Derecha") || linea.equals("Presionado  Derecha")) {
+//                                rotarTG(tgMundo, 5, "Y", posPersonaje);
+//                                steve.caminar();
+//                            } else if (linea.equals("Suelto  Izquierda") || linea.equals("Presionado  Izquierda")) {
+//                                rotarTG(tgMundo, -5, "Y", posPersonaje);
+//                                steve.caminar();
+//                            }
+//                        } else {
+//                            mensaje.append(caracter);
+//                        }
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            });
+//
+//            hilo.start();
+//
+//        } else {
+//            System.out.println("No se pudo abrir el puerto");
+//        }
+//    }
 
     private boolean verificarColisionConMovimiento(Vector3d direccion) {
         // 1. Guardar transformación actual
