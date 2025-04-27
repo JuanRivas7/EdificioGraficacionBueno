@@ -111,27 +111,43 @@ public class EscenaGrafica {
 //         //Mesa 60cm x 40cm x 60cm aprox (en metros: 0.3f, 0.2f, 0.3f)
         //agregarInstanciaConColision(RepositorioObjetos3D.mesa, 1.5f, 0f, 0f, 0.3f, 0.2f, 0.3f);
 
-        BandaTransportadora banda = new BandaTransportadora(3, 0.2f, -4, 4, 0.28f, 0.45f);
+        BandaTransportadora banda = new BandaTransportadora(3.2f, 0.2f, -4, 4, 0.28f, 0.45f);
 
         // Crear y agregar un cilindro
         TransformGroup cilindro = banda.crearCilindroPresion(
-                -0.3f, // posX
+                4.0f, // posX
                 0.3f, // posY
-                -3.0f, // posZ
+                -2.5f, // posZ
                 0.5f, // radio
                 0.55f // altura
         );
   
 agregarInstancia(Maquinas.crearAmasadora(), -3.5f, 0.0f, -3.0f);
-//    agregarInstancia(Maquinas.crearRefrigerador(), -2.5f, 0.0f, -3.0f);
-//    agregarInstancia(Maquinas.crearHorno(), -1.5f, 0.0f, -3.0f);
-//    agregarInstancia(Maquinas.crearCortadora(), -0.5f, 0.0f, -3.0f);
+    agregarInstancia(Maquinas.crearRefrigerador(), -2.5f, 0.0f, -4.2f);
+    agregarInstancia(Maquinas.crearRefrigerador(), -2.3f, 0.0f, -4.2f);
+     agregarInstancia(Maquinas.crearRefrigerador(), -2.1f, 0.0f, -4.2f);
+    agregarInstancia(Maquinas.crearHorno(), -1.5f, 0.0f, -2.8f);
+     agregarInstancia(Maquinas.crearHorno(), -1.7f, 0.0f, -2.8f);
+     agregarInstancia(Maquinas.crearHorno(), -1.3f, 0.0f, -2.8f);
+      agregarInstancia(Maquinas.crearHorno(), -1.1f, 0.0f, -2.8f);
+       agregarInstancia(Maquinas.crearHorno(), -0.9f, 0.0f, -2.8f);
+    agregarInstancia(Maquinas.crearCortadora(), 0.5f, 0.2f, -4.2f);
+    agregarInstancia(Maquinas.crearCortadora(), 0.2f, 0.2f, -4.2f);
+    agregarInstancia(Maquinas.crearCortadora(), -0.1f, 0.2f, -4.2f);
+    
+    crearCaja(-3.5f, 0.0f, -4.2f, 1.0f, 0.5f, 0.5f);
+crearCaja(-4.2f, 0.19f, -1.5f, 0.5f, 0.5f, 1.5f);
+crearCaja(6.2f, 0.19f, -0.8f,  1.0f, 0.5f, 0.5f);
+crearCaja(0.5f, 0.1f,  -4.2f, 0.2f, 0.2f,0.2f);
+crearCaja(0.2f, 0.1f,  -4.2f, 0.2f, 0.2f,0.2f);
+crearCaja(-0.1f, 0.1f,  -4.2f, 0.2f, 0.2f,0.2f);
+
 
         tgMundo.addChild(cilindro);
         tgMundo.addChild(banda);
         //----------PISO 1-----------
         //Salon Izquierda y entrada--------------
-        //Entrada Principal
+        //Entrada Principalwwaaa
         crearPuertaDoble(0.5f, 0.38f, 6.0f, 0.8f, 0.8f, 0.05f, 0);//Puerta Entrada PDerecha
         crearPuertaDoble(-0.5f, 0.38f, 6.0f, 0.8f, 0.8f, 0.05f, 0);//Puerta Entrada PIzq
         //Entrada ALimentarias
@@ -733,9 +749,7 @@ agregarInstancia(Maquinas.crearAmasadora(), -3.5f, 0.0f, -3.0f);
         crearPC(-3.95f, 0.98f, 4.1f, 0.3f, 0.15f, 0.03f, 90);//PC2 Entrada>Ventanas
         crearPC(-3.95f, 0.98f, 4.75f, 0.3f, 0.15f, 0.03f, 90);//PC3 Entrada>Ventanas
         
-        // Ejemplo: crear una caja en (1, 0.5, 2) con tamaño 0.5x0.5x0.5
-crearCaja(-3.5f, 0.0f, -4.2f, 1.0f, 0.5f, 0.5f);
-crearCaja(-4.2f, 0.19f, -1.5f, 0.5f, 0.5f, 1.5f);
+       
     }
     
     public void crearCaja(float x, float y, float z, float ancho, float alto, float profundidad) {
